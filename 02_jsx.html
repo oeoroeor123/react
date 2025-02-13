@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+  
+  <!--
+    JSX
+    1. JSX는 JavaScript의 확장 문법으로 HTML의 markup 방식으로 React Element를 생성할 수 있다.
+    2. 코드를 읽기 쉽고, 마크업 언어와 구조가 유사하여 파악이 쉽다.
+    3. JSX는 공식적인 JavaScript 문법이 아니므로, Babel 이라는 JavaScript Compiler가 필요하다.
+    4. Bable
+      1) https://babeljs.io
+      2) ES6+ 코드를 이전의 웹 브라우저 환경에서 돌아갈 수 있도록 하위 버전 코드로 변경해주는 트랜스파일링 툴이다.
+      3) JSX을 처리하기 위한 표준으로 자리를 잡았다.
+    5. JSX 문법
+      1) React Element는 최상위 Node 태그 하나로 구성해야 한다.
+      2) 최상위 Node로 사용할 태그가 없는 경우에는 React가 지원하는 Fragment를 사용할 수 있다.
+        ① <React.Fragment></React.Fragment>
+        ② <></> (축약 문법)
+      3) 중괄호 {}를 활용한다.
+        ① 중괄호 안에 JavaScript 표현식(&{})을 넣을 수 있다. (기존에는 `` 사용)
+        ② 중괄호 안에 주석을 넣을 수 있다.
+      4) 태그 속성(Attribute)을 사용할 수 있으나, 일부 속성의 이름은 다르게 구성되어있다.
+        ① class 속성 : className
+        ② 이벤트 속성
+           - onclick : onClick
+           - onsubmit : onSubmit 등
+      5) CSS 속성을 inline style로 지정할 수 있다.
+        ① 객체 {} 형식으로 style을 전달한다.
+        ② 기존 Dash Style의 CSS 속성명을 Camel Case 방식으로 변경한다.
+           - background-color : backgroundColor 등
+  -->
+
+  <div id="root1"></div>
+
+  <script type="text/babel"> // babel 사용을 위한 타입 지정
+
+    // JSX를 이용한 Element 제작, React.Fragment로 만들 수 있으나 축약 문법을 주로 이용함
+    const helloworld = (
+      // 최상위 Node 태그 하나로 구성해야 하기에, 여러개 사용이 필요할 땐 하나로 묶어줌
+      <>
+      <React.Fragment>
+          <h1>hello world</h1>
+          <h2>nice to meet you</h2>
+      </React.Fragment>
+      <React.Fragment>
+          <h1>hello world</h1>
+          <h2>nice to meet you</h2>
+      </React.Fragment>
+      </>
+    )
+
+    // render
+    ReactDOM.createRoot(document.getElementById('root1')).render(helloworld);
+  </script>
+
+  <hr/>
+
+  <div id="root2"></div>
+
+  <script type="text/babel">
+
+    const radius = 3.5
+
+    // JSX의 {}를 이용하여 표현식을 작성할 수 있다.
+    const circleElement = (
+      <>
+        <h1>circleferene : {2 * 3.14 * radius}</h1> {/* 원의 둘레 */}
+        <br/>
+        <h1>Area : {3.14 * radius * radius}</h1>    
+        {
+          // 원의 넓이
+        }
+      </>
+    )
+
+    // render
+    ReactDOM.createRoot(document.getElementById('root2')).render(circleElement);
+  </script>
+
+  <hr/>
+
+  <div id="root3"></div>
+
+  <script type="text/babel">
+
+    // Element 생성
+    const btnElement = <button onClick={ () => {alert('helloworld')} }>클릭</button>
+
+    // render
+    ReactDOM.createRoot(document.getElementById('root3')).render(btnElement);
+  </script>
+
+  <hr/>
+
+  <div id="root4"></div>
+
+  <script type="text/babel">
+
+    // JSX는 style을 객체로 만들고, CSS 속성 이름은 Camel Case 룰을 따른다.
+    const boxStyle = {
+      width: '100px',
+      height: '100px',
+      backgroundColor: '#FF0000',
+      textAlign: 'center',
+      fontSize: 32
+    }
+
+    // Element 생성
+    const boxElement = <h1 style={boxStyle}>hello</h1>
+
+    // render
+    ReactDOM.createRoot(document.getElementById('root4')).render(boxElement);
+  </script>
+
+</body>
+</html>
