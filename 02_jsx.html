@@ -81,11 +81,13 @@
     // JSX의 {}를 이용하여 표현식을 작성할 수 있다.
     const circleElement = (
       <>
-        <h1>circleferene : {2 * 3.14 * radius}</h1> {/* 원의 둘레 */}
+        <h1
+         id="circleferene" // 태그 내부 주석은 중괄호를 사용하지 않는다. (주로 시작 태그에 주석을 작성한다.)
+        >circleferene : {2 * 3.14 * radius}</h1> {/* 원의 둘레 (태그 외부 주석은 중괄호를 사용해야 한다.) */}
         <br/>
-        <h1>Area : {3.14 * radius * radius}</h1>    
+        <h1>Area : {3.14 * radius * radius}</h1>
         {
-          // 원의 넓이
+          // 원의 넓이 (single comment는 지금처럼 중괄호와 다른 줄에 작성해야 한다.)
         }
       </>
     )

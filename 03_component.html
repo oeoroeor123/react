@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+  
+  <!--
+    Component
+    1. React는 컴포넌트를 이용해 재사용이 가능한 화면 조각을 구성한다.
+    2. 컴포넌트는 화면에 표시할 Element를 반환한다. (Element가 컴포넌트 안으로 들어간다.)
+    3. 컴포넌트의 이름은 Pascal Case 룰을 따른다. (첫 문자가 대문자인 Camel Case - 자바 클래스 형식)
+    4. 컴포넌트는 <컴포넌트/> 형식으로 호출해서 사용한다.
+    5. 컴포넌트 호출 시 속성을 선언하고 값을 전달할 수 있다.
+       <컴포넌트 속성=값/>
+       컴포넌트 속성으로 전달된 값은 컴포넌트의 props 객체( {} )가 받는다. (매개변수가 props 이다.)
+    6. 컴포넌트 생성 방법
+      1) 클래스 컴포넌트
+         ① JavaScript 클래스를 이용한다. 
+         ② state와 life cycle API를 사용할 수 있으나 상대적으로 복잡하다.
+         ③ React.Component를 상속 받아서 작성한다.
+         ④ render() { return 엘리먼트 } 형식으로 화면에 표시할 엘리먼트를 반환한다.
+      2) 함수 컴포넌트
+         ① JavaScript 함수를 이용한다.
+         ② 함수 선언식( function 함수() {} )이나 함수 표현식( const = 함수() => {} ) 모두 사용할 수 있으며 상대적으로 간결하다.
+         ③ 단점으로 지적되던 state와 life cycle API 사용 불가가 v16.8 이후로 훅(hooks)을 통해 해결되었다. 
+         ④ 리액트에서는 함수 컴포넌트 사용을 권장한다.
+  -->
+  <div id="root1"></div>
+  
+  <script type="text/babel">
+
+    // 클래스 컴포넌트 생성 (정해진 문법이며, 컴포넌트 이름만 Pascal Case 룰에 따라 변경이 가능하다.)
+    class WelcomeComp extends React.Component {
+      render() {
+        // Element 생성, 컴포넌트가 Element를 내포하고 있다.
+        return <h1>Welcome React</h1>
+      }
+    }
+
+    // render, 컴포넌트는 <컴포넌트/> 형식으로 호출해서 사용
+    ReactDOM.createRoot(document.getElementById('root1')).render(<WelcomeComp/>);
+  </script>
+
+  <hr/>
+
+  <div id="root2"></div>
+
+  <script type="text/babel">
+
+    // '함수 선언식'을 이용한 함수 컴포넌트 생성
+    function HelloComp() {
+
+      // 컴포넌트를 처리하는 코드는 이쪽에 작성한다.
+
+      // Element 생성
+      return (
+        <>
+          <h1>Hello React</h1>
+          <h2>Hello React</h2>
+          <h3>Hello React</h3>
+        </>
+      )
+    }
+
+    // render, 컴포넌트는 <컴포넌트/> 형식으로 호출해서 사용
+    ReactDOM.createRoot(document.getElementById('root2')).render(<HelloComp/>);
+  </script>
+
+  <hr/>
+
+  <!--
+    컴포넌트 합성
+    1. 컴포넌트는 다른 컴포넌트를 이용해 구성할 수 있다.
+    2. 가능한 컴포넌트를 작게 만들어서 사용하는 것이 좋다.
+    3. 리액트에서는 버튼, 폼 등 대부분의 구성 요소를 컴포넌트로 만들어서 사용한다.
+  -->
+  <div id="root3"></div>
+
+  <script type="text/babel">
+
+    // '함수 표현식'을 이용한 함수 컴포넌트 생성
+    const OuterComp = () => {
+      return (
+        // InnerComp 컴포넌트를 불러 온다.
+        <>
+        <InnerComp/>
+        <InnerComp/>
+        <InnerComp/>
+        </>
+      )
+    }
+
+    const InnerComp = () => {
+      return (
+        <h1>Inner Component</h1>
+      )
+    }
+
+    // render
+    ReactDOM.createRoot(document.getElementById('root3')).render(<OuterComp/>);
+  </script>
+
+  <hr/>
+
+  <!--
+    props
+    1. properties의 줄임말로 속상을 의미한다.
+    2. 컴포넌트 호출 시 속성을 선언하고 값을 전달하면 props 객체( {} ) 가 그 값을 받는다.
+    3. props 객체는 읽기 전용이므로 props 객체의 값을 바꿀 수 없다.
+       함수형 컴포넌트는 항상 순수 함수처럼 동작해야 한다.
+
+       * 순수 함수
+       1. 전달된 인자 값을 수정하지 않는 함수를 의미한다. (함수에 전달한 입력값을 수정하지 않는다.)
+       2. 동일한 입력에 대해선 동일한 출력을 하는 함수를 의미한다.
+       3. 순수 함수 예시
+          function total(a, b) {
+            return a + b;
+          }
+       4. 비 순수 함수 예시
+          function total(a, b) {
+            return a += b; // 입력 값 a가 함수 내부에서 수정되었기 때문에 순수 함수가 아니다.
+          }
+  -->
+  <div id="root4"></div> <!-- div#root4 -->
+
+  <script type="text/babel">
+
+    function NameCard1(props) {
+      // 직접 불러서 사용하는 방법
+      return (
+        <h1>이름 : {props.name}, 연락처 : {props.tel}</h1>
+      )
+    }
+
+    function NameCard2(props) {
+      // 객체 구조 분해 할당 문법 (자바스크립트 문법)
+      // 객체의 각 프로터피를 개별 변수로 손쉽게 저장할 수 있다.
+      const {name, tel} = props; // const {변수, 변수} = 객체
+      return (
+        <h1>이름 : {name}, 연락처: {tel} </h1>
+      )
+    }
+
+    function NameCard3({name, tel}) { // 좀더 적극적으로 객체 구조 분해 할당 문법을 사용한다.
+      return (
+        <h1>이름 : {name}, 연락처: {tel} </h1>
+      )
+    }
+
+    // props 객체의 디폴트 설정 (호출 시 내용 전달을 하지 않고, 메소드 코드 내에서 디폴트 값을 부여함)
+    NameCard4.defaultProps = {
+      name : 'Jessica',
+      tel : '010-3333-3333'
+    }
+    function NameCard4(props) {
+      return (
+        <h1>이름 : {props.name}, 연락처 : {props.tel}</h1>
+      )
+    }
+
+    // render
+    ReactDOM.createRoot(document.getElementById('root4')).render(
+      [
+        // 컴포넌트 호출 시 해당 변수들의 내용이 들어있어야 함
+        <NameCard1 name={'Alice'} tel={'010-1234-5678'} />,
+        <NameCard2 name={'James'} tel={'010-0000-0000'} />,
+        <NameCard3 name={'Jackson'} tel={'010-1111-2222'} />,
+        <NameCard4 />
+      ]
+    );
+  </script>
+
+  <hr/>
+
+  <!--
+    props.children : 컴포넌트를 호출 시, 컴포넌트 내부 요소를 사용할 때 children을 이용한다.
+  -->
+  <div id="root5"></div>
+
+  <script type="text/babel">
+
+    function GiftCard(props) {
+        return (
+          <h1>{props.children}</h1>
+        )
+      }
+
+    // render
+    ReactDOM.createRoot(document.getElementById('root5')).render(
+      [
+      <GiftCard>3만원</GiftCard>,
+      <GiftCard><em>5만원</em></GiftCard>
+      ]
+    );
+
+  </script>
+
+
+</body>
+</html>
