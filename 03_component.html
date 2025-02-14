@@ -119,7 +119,7 @@
 
   <!--
     props
-    1. properties의 줄임말로 속상을 의미한다.
+    1. properties의 줄임말로 속성을 의미한다.
     2. 컴포넌트 호출 시 속성을 선언하고 값을 전달하면 props 객체( {} ) 가 그 값을 받는다.
     3. props 객체는 읽기 전용이므로 props 객체의 값을 바꿀 수 없다.
        함수형 컴포넌트는 항상 순수 함수처럼 동작해야 한다.
@@ -129,7 +129,7 @@
        2. 동일한 입력에 대해선 동일한 출력을 하는 함수를 의미한다.
        3. 순수 함수 예시
           function total(a, b) {
-            return a + b;
+            return a + b; // a와 b에 따라 그 자체로 반환 값이 달라진다.
           }
        4. 비 순수 함수 예시
           function total(a, b) {
@@ -150,15 +150,15 @@
     function NameCard2(props) {
       // 객체 구조 분해 할당 문법 (자바스크립트 문법)
       // 객체의 각 프로터피를 개별 변수로 손쉽게 저장할 수 있다.
-      const {name, tel} = props; // const {변수, 변수} = 객체
+      const {name, tel} = props; // const {변수, 변수} = props 객체
       return (
         <h1>이름 : {name}, 연락처: {tel} </h1>
       )
     }
 
-    function NameCard3({name, tel}) { // 좀더 적극적으로 객체 구조 분해 할당 문법을 사용한다.
+    function NameCard3({name, tel}) { // 좀더 적극적으로 객체 구조 분해 할당 문법을 사용한다. props 대신 직접 객체 구조 분해 할당을 지정함
       return (
-        <h1>이름 : {name}, 연락처: {tel} </h1>
+        <h1>이름 : {name}, 연락처: {tel}</h1>
       )
     }
 
@@ -167,6 +167,7 @@
       name : 'Jessica',
       tel : '010-3333-3333'
     }
+
     function NameCard4(props) {
       return (
         <h1>이름 : {props.name}, 연락처 : {props.tel}</h1>
@@ -176,7 +177,7 @@
     // render
     ReactDOM.createRoot(document.getElementById('root4')).render(
       [
-        // 컴포넌트 호출 시 해당 변수들의 내용이 들어있어야 함
+        // 컴포넌트 호출 시 해당 변수들의 내용이 들어있어야 함, 해당 값들이 props에 넣어진다.
         <NameCard1 name={'Alice'} tel={'010-1234-5678'} />,
         <NameCard2 name={'James'} tel={'010-0000-0000'} />,
         <NameCard3 name={'Jackson'} tel={'010-1111-2222'} />,
@@ -207,8 +208,48 @@
       <GiftCard><em>5만원</em></GiftCard>
       ]
     );
-
   </script>
+
+<hr/>
+
+<!--
+  prop-types
+  1. props 객체에 저장된 속성들의 타입 등을 명시함으로써 다른 개발자와 협업 시 개발 능률을 높일 수 있다.
+  2. 별도 CDN 추가가 필요하다. (참고 : https://github.com/facebook/prop-types)
+-->
+<div id="root6"></div>
+
+<script src="https://unpkg.com/prop-types@15.6/prop-types.js"></script>
+
+<script type="text/babel">
+
+ // props 대신 직접적으로 객체 구조 분해 할당 지정
+  function PrintComp({name, age, hobbies}) {
+    return (
+      <div>
+        <h1>My name is {name}.</h1>
+        <h1>I'm {age} years old.</h1>
+        <h1>I like {hobbies[0]} and {hobbies[1]}</h1>
+      </div>
+    )
+  }
+
+  // props 객체에 저장된 속성들의 타입 명시
+  PrintComp.propTypes = { 
+    name: PropTypes.string,
+    age: PropTypes.number.isRequired,
+    hobbies: PropTypes.array // 배열로 전달
+  }
+
+  // render, Element 호출 시 내용을 전달함
+  ReactDOM.createRoot(document.getElementById('root6')).render(
+    [
+      <PrintComp name="Alice" age={20} hobbies={['Swimming', 'Running']}/>, // 정상 코드
+      <PrintComp name={10} age={'Tom'} hobbies={'Basketball'}/>  // 총 3개의 Warning 발생 (Console 탭에서 확인 가능합니다.)
+    ]
+  )
+</script>
+
 
 
 </body>

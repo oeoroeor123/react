@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <!--
+    이벤트
+    1. 리액트의 이벤트 속성은 Camel Case 룰을 따른다. (onClick, onSubmit, ...)
+    2. 이벤트 속성 내부에는 반드시 이벤트 핸들러를 작성한다. 일반 JavaScript 코드는 동작하지 않는다.
+    3. 컴포넌트를 호출할 때 이벤트 핸들러로 사용할 함수를 props 객체에 전달할 수 있다.
+    4. 이벤트 전파를 취소할 때는 stopPropagation() 메소드를 호출한다.
+    5. 이벤트 취소를 위해서 preventDefault() 메소드를 호출한다.
+  -->
+
+  <!-- 클래스형 컴포넌트와 이벤트 -->
+   <div id="root1"></div>
+
+   <script type="text/babel">
+
+    // 1. 이벤트 속성 내부에 직접 이벤트 핸들러 작성하기 (화살표 함수 사용)
+    class EventClassComp1 extends React.Component {
+      render() {
+        return (
+          <>
+            <h1>이벤트 핸들링1</h1>
+            <button onClick={() => {alert('버튼1')}}>버튼1</button>
+          </>
+        )
+      }
+    }
+
+    // 2. 이벤트 핸들러를 별도로 만든 뒤 이벤트 속성에 등록하기
+    class EventClassComp2 extends React.Component {
+      // 화살표 함수로 이벤트 핸들러 만들기
+      onClickHandler = () => {alert('버튼2')}
+      
+      // this = EventClassComp2
+      render() {
+        return (
+          <>
+            <h1>이벤트 핸들링2</h1>
+            <button onClick={this.onClickHandler}>버튼2</button>
+          </>
+        )
+      }
+    }
+
+    // 3. 이벤트 핸들러를 props 객체로 전달하기
+    class EventClassComp3 extends React.Component {
+      render() {
+        // 클래스형 컴포넌트의 props는 this.props로 표현한다.
+        const {handler, children} = this.props
+        return (
+          <>
+            <h1>이벤트 핸들링3</h1>
+            <button onClick={handler}>{children}</button>
+          </>
+        )
+      }
+    }
+
+    // render
+    // ReactDOM.createRoot(document.getElementById('root1')).render(<EventClassComp1/>);
+    // ReactDOM.createRoot(document.getElementById('root1')).render(<EventClassComp2/>);
+
+    // {handler} = handler={() => { alert('버튼3') }} / {children} = 버튼3
+    ReactDOM.createRoot(document.getElementById('root1')).render(
+      <EventClassComp3 handler={() => { alert('버튼3') }}>버튼3</EventClassComp3>);
+   </script>
+
+   <!-- 함수형 컴포넌트와 이벤트 -->
+   <div id="root2"></div>
+
+   <script type="text/babel">
+
+    // 1. 이벤트 타겟 활용
+    // alert(e.target.textContent) = 버튼4
+    function EventFuncComp1() {
+      return (
+        <>
+          <h1>이벤트 핸들링4</h1>
+          <button onClick={(e) => { alert(e.target.textContent) }}>버튼4</button>
+        </>
+      )
+    }
+
+    // 2. 이벤트 취소 활용
+    function EventFuncComp2() {
+      
+      // 이벤트 핸들러로 사용할 내부 함수
+      // 함수 선언식
+      function onSubmitHandler(e) {
+        if(document.getElementById('a').value === '') {
+          // 이벤트 취소
+          e.preventDefault();
+          alert('서브밋이 취소되었습니다.');
+        }
+      }
+
+      /*
+      함수 표현식, 아래와 같이 함수 표현식을 이용한 이벤트 핸들러 작성도 가능하다.
+      const onSubmitHandler = (e) => {
+       if(document.getElementById('a').value === '') {
+        e.preventDefault();
+        alert('서브밋이 취소되었습니다.');
+       }
+      }
+      */
+
+      return (
+        // 제출 버튼 클릭 시 폼에 들어있는 이벤트 핸들러 내부 함수인 이벤트 취소 함수가 동작함
+        <>
+          <h1>이벤트 핸들링5</h1>
+          <form onSubmit={onSubmitHandler}>
+            <input type="text" id="a"/>
+            <br/>
+            <button type="submit">제출</button>
+          </form>
+        </>
+      )
+    }
+
+    // 3. 이벤트를 props 객체로 전달
+    function EventFuncComp3({handler, children}) {
+
+      return (
+        <>
+          <h1>이벤트 핸들링6</h1>
+          <button onClick={handler}>{children}</button>
+        </>
+      )
+    }
+
+    // render
+    // ReactDOM.createRoot(document.getElementById('root2')).render(<EventFuncComp1/>)
+    // ReactDOM.createRoot(document.getElementById('root2')).render(<EventFuncComp2/>)
+    ReactDOM.createRoot(document.getElementById('root2')).render(
+      <EventFuncComp3 handler={() => { alert('버튼6') }}>버튼6</EventFuncComp3>)
+
+   </script>
+
+
+  
+</body>
+</html>

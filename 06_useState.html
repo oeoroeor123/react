@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <!--
+    React.useState()
+    1. 함수 컴포넌트에서 state를 사용하기 위한 훅(Hooks, 함수)이다.
+    2. 리액트에서는 앞으로 주요 개발 방식으로 useState() 함수를 사용할 것으로 발표했다.
+    3. 형식
+      const [state 이름, state 변경 메소드 이름] = React.useState(state 초기값) // 변경 메소드 이름은 보통 setter 형식을 따른다.
+      state 변경 메소드 이름(인자값) // 인자값으로 state값 설정이 가능
+  --> 
+  <div id="root1"></div>
+
+  <script type="text/babel">
+
+    // 함수 선언식 컴포넌트
+    function UseStateComp1() {
+
+      // 객체 구조 분해 할당으로 React 객체 내부에 들어있는 useState를 뺀다. (React.useState와 동일)
+      const { useState } = React;
+
+      // const [state 변수, state 변수 바꾸는 메소드]로 이해하면 된다.
+      // state 변수 바꾸는 메소드는 state 변수에 setter 형식을 따라 지정한다. 변수가 지정되면 뒤에는 자동으로 따라오는 형식('', set'')
+      // 위 코드에서 객체 구조 분해 할당으로 useState를 뺏기 때문에 여기선 useState만 기입하고, 초기값을 지정한다.
+      const [text, setText] = useState(''); // state = {text : ''};와 동일
+
+      // state가 바뀌면 리 렌더링되어 컴포넌트를 다시 그린다. (변경사항만)
+      return (
+        <>
+          <h1>{text}</h1>
+          <button onClick={(e) => {
+            setText(e.target.textContent)
+          }}>장미</button>
+        </>
+      )
+    }
+
+    // 렌더링
+    ReactDOM.createRoot(document.getElementById('root1')).render(<UseStateComp1/>);
+
+    /* 
+    전체적인 흐름
+     1. 처음 컴포넌트가 렌더링되면 text는 빈 문자열 ''로 설정됩니다.
+     2. 버튼을 클릭하면 setText 함수가 호출되고, 버튼의 텍스트(예: "장미")가 text 상태에 저장됩니다.
+     3. 상태가 변경되면 컴포넌트가 리렌더링되며, 변경된 text 값(예: "장미")이 <h1> 태그에 출력됩니다.
+    */
+  </script>
+
+  <div id="root2"></div>
+
+  <script type="text/babel">
+
+    // 함수 선언식 컴포넌트
+    function UseStateComp2() {
+      
+      // 객체 구조 분해 할당 React에서 useState 빼서 사용하기
+      const { useState } = React;
+
+      // 아이디 초기값 '' 없음
+      const [id, setId] = useState('');
+      // 비밀번호 초기값 '' 없음
+      const [password, setPassword] = useState('');
+
+      // 서브밋 이벤트 핸들러 생성
+      const onSubmitHandler = (e) => {
+        // alert('로그인 성공!' + id + ',' + password);
+
+        // 아이디나 비밀번호가 입력되지 않았다면 submit 취소하기
+        if(id === '' || password === '') {
+          alert('아이디와 비밀번호를 모두 입력해주세요.');
+
+          // 이벤트 취소
+          e.prevDefault();
+          return;
+        }
+      }
+
+      // input에 값이 입력될 때 마다 setId, setPassword 메소드를 호출해 state 값을 부여함
+      // 서브밋 버튼을 누르면 폼 내 지정한 onSubmitHandler 이벤트 핸들러가 동작함
+      return (
+        <form onSubmit={onSubmitHandler}>
+          <input type="text" placeholder="아이디" onChange={(e) => { setId(e.target.value); }}/>
+          <br/>
+          <input type="password" placeholder="비밀번호" onChange={(e) => { setPassword(e.target.value); }}/>
+          <br/>
+          <button type="submit">제출</button>
+        </form>
+      )
+    }
+
+    // 렌더링
+    ReactDOM.createRoot(document.getElementById('root2')).render(<UseStateComp2/>);
+  </script>
+
+  
+</body>
+</html>
