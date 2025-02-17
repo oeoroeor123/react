@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <!-- 
+  Life Cycle 
+  1. 컴포넌트를 이용해 엘리먼트가 화면에 나타나거나, 업데이트 되거나, 삭제될 때 호출되는 메소드를 의미
+  2. 클래스 컴포넌트에서만 호출할 수 있다.
+  3. 크게 3가지로 분류할 수 있다.
+     1) Mount   : 엘리먼트가 화면에 나타나는 것을 의미 
+     2) Update  : 엘리먼트가 수정되어 화면이 다시 그려지는 것을 의미
+     3) Unmount : 엘리먼트가 화면에서 사라지는 것을 의미
+  -->
+  
+  <!-- 
+    Mount
+    1. 컴포넌트가 생성되어 엘리먼트가 화면에 나타나는 것을 의미
+    2. Life Cycle Method
+       1) constructor : 컴포넌트 생성 및 state 초기화
+       2) getDerivedStateFromProps : props로부터 state 업데이트
+       3) render : 화면에 렌더링
+       4) componentDidMount : 렌더링 후 실행(비동기 작업 수행 가능)
+  -->
+
+  <div id="root1"></div>
+  <script type="text/babel">
+
+    class MountComp extends React.Component {
+      
+      // 1. constructor
+      // constructor에서 state를 초기화 해야 getDerivedStateFromProps 메소드를 사용할 수 있다.
+      constructor(props) {
+        super(props);
+
+        this.state = {
+          text: ''
+        }
+        console.log('constructor');
+      }
+
+      // 2. getDerivedStateFromProps
+      // props로 받아온 값을 state와 동기화할 때 사용한다. Mount, Update 시 동작한다.
+      static getDerivedStateFromProps(nextProps, nextState) {
+        console.log('getDerivedStateFromProps');
+        
+        return null; // state 변경이 없는 경우에 null을 반환한다.
+      }
+
+      // 3. render
+      // this.props, this.state, this.setState()를 사용할 수 있다.
+      render() {
+        console.log('render');
+        return (
+          <h1>Mount Rendering</h1>
+        )
+      }
+
+      // 4. ★componentDidMount
+      // 렌더링 이후에 호출되는 메소드
+      // 대표적으로 비동기 처리를 수행할 수 있다.
+      componentDidMount() {
+        console.log('componentDidMount');
+      } 
+    }
+
+    // ReactDOM.createRoot(document.getElementById('root1')).render(<MountComp/>);
+
+  </script>
+
+  <!-- 
+    Update
+    1. 컴포넌트의 state 또는 props가 변경되는 경우, 엘리먼트가 수정되어 화면에 다시 그려지는 것을 의미
+    2. 4가지 상황
+       1) props 변경
+       2) state 변경
+       3) 부모 컴포넌트의 리렌더링
+       4) 강제 렌더링 : this.forceUpdate() 메소드
+    3. Life Cycle Method
+       1) constructor : 컴포넌트 생성 및 state 초기화
+       2) getDerivedStateFromProps : props로부터 state 업데이트
+       3) shouldComponentUpdate : 리렌더링 여부 결정 (false 반환하면 이후 메소드 실행x)
+       4) render : 렌더링
+       5) getSnapShotBeforeUpdate : 업데이트 직 전에 데이터 스냅샷 저장
+       6) componentDidUpdate : 렌더링 완료 후 실행
+    4. 특징
+       shouldComponentUpdate()를 활용하여 불필요한 렌더링을 방지하고,
+       getSnapShotBeforeUpdate()를 이용해 업데이트 전 값을 저장하고,
+       componentDidUpdate()에서 활용 가능
+  -->
+
+  <div id="root2"></div>
+  <script type="text/babel">
+
+    class UpdateComp extends React.Component {
+      
+      // 1. constructor
+      // constructor에서 state를 초기화 해야 getDerivedStateFromProps 메소드를 사용할 수 있다.
+      constructor(props) {
+        super(props);
+        this.state = {
+          now: new Date().toLocaleTimeString()
+        }
+        console.log('constructor:', this.state.now);
+      }
+
+      // 2. getDerivedStateFromProps
+      // props로 받아온 값을 state와 동기화할 때 사용한다. Mount, Update 시 동작한다.
+      static getDerivedStateFromProps(nextProps, nextState) {
+        console.log('getDerivedStateFromProps nextProps:', nextProps);
+        console.log('getDerivedStateFromProps nextState:', nextState);
+        return null;
+      }
+
+      // 3. shouldComponentUpdate
+      // 컴포넌트를 리렌더링 할 것인지 여부를 결정한다.
+      // boolean 타입의 값을 반환한다.
+      // false를 반환하면 render() 메소드 이후(포함) Life Cycle Method 호출을 하지 않는다.
+      shouldComponentUpdate(nextProps, nextState) {
+        console.log('shouldComponentUpdate nextProps:', nextProps);
+        console.log('shouldComponentUpdate nextState:', nextState);
+        return true; // false 시 이후 메소드 호출이 불가하니 true로 설정한다.
+      }
+
+        onClickHandler = () => {
+          this.setState({ // 클래스 컴포넌트에서 state 변경하는 setState() 메소드
+            now: new Date().toLocaleTimeString()
+        });
+       }
+      
+       // 4. render
+        render() {
+          console.log('render');
+        return (
+          <>
+          <h1>Update Rendering</h1>
+          <button onClick={this.onClickHandler}>Now</button>
+          <h1>{this.state.now}</h1>
+          </>
+        )
+      }
+
+      // 5. getSnapShotBeforeUpdate
+      // 컴포넌트 업데이트 직 전에 호출하는 메소드
+      // 주로 업데이트 직 전의 값을 참고할 일이 있을 때(대표적으로 스크롤바의 위치)
+      // 반환값을 componentDidUpdate() 메소드의 3번째 인자로 전달한다. (1번째 인자는 prevProps, 2번째 인자는 prevState 이다.)
+      getSnapShotBeforeUpdate(prevProps, prevState) {
+        console.log('getSnapShotBeforeUpdate prevProps:', prevProps);
+        console.log('getSnapShotBeforeUpdate prevState:', prevState);
+
+        return { // componentDidUpdate() 메소드로 전달되는 반환값
+          snapshotTime: new Date().toLocaleTimeString()
+        }
+      }
+
+      // 6. ★componentDidUpdate
+      // 컴포넌트의 리렌더링 이후에 동작하는 메소드
+      // 컴포넌트가 리렌더링 이전에 가졌던 데이터를 prevProps, prevState를 이용해 접근할 수 있다.
+      componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log('componentDidUpdate: prevProps', prevProps);
+        console.log('componentDidUpdate: prevState', prevState);
+        console.log('componentDidUpdate: snapshot', snapshot);
+      }
+    }
+
+    // ReactDOM.createRoot(document.getElementById('root2')).render(<UpdateComp/>);
+  </script>
+
+
+  <!-- 
+    Unmount
+    1. 컴포넌트를 화면에서 제거하는 것을 의미
+    2. Life Cycle Method
+       1) constructor : 컴포넌트 생성 및 state 초기화
+       2) getDerivedStateFromProps : props로부터 state 업데이트
+       3) render : 렌더링
+       4) componentWillUnmount : 컴포넌트 제거
+  -->
+
+  <div id="root3"></div>
+  <script type="text/babel">
+
+    class UnmountComp extends React.Component {
+
+      render() {
+        return <h1>Unmount Rendering</h1>
+      }
+
+      // componentWillUnmount
+      // 컴포넌트가 화면에서 사라지기 직 전에 호출된다.
+      componentWillUnmount() {
+        console.log('componentWillUnmount');
+      }
+
+    }
+
+    const root3 = ReactDOM.createRoot(document.getElementById('root3'));
+    root3.render(<UnmountComp/>);
+    setTimeout(() => {
+      root3.render(null);
+    }, 3000); // 3초 후에 Unmount 실행
+  </script>
+  
+</body>
+</html>

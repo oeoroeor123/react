@@ -64,6 +64,8 @@
     */
   </script>
 
+  <hr/>
+
   <div id="root2"></div>
 
   <script type="text/babel">
@@ -110,6 +112,42 @@
     ReactDOM.createRoot(document.getElementById('root2')).render(<UseStateComp2/>);
   </script>
 
+  <hr/>
+
+  <div id="root3"></div>
+
+  <script type="text/babel">
+
+    // select 태그로 도시 3개 등록하고, 선택한 도시를 state로 지정하고, 화면에 표시하기
+    function UseStateComp3() {
+      const { useState } = React;
+
+      // useState는 항상 배열을 반환한다.
+      const [city, setCity] = useState('');
+
+      const onChangeHandler = (e) => {
+        setCity(e.target.value);
+      }
+
+      return(
+        <>
+        <select onChange={onChangeHandler}>
+          <option value="">도시선택</option>
+          <option>서울</option>
+          <option>경기</option>
+          <option>인천</option>
+        </select>
+        <div>
+          {/* select를 할 때 마다 선택된 도시가 노출된다. */}
+          {city}
+        </div>
+        </>
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root3')).render(<UseStateComp3/>);
+
+  </script>
   
 </body>
 </html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <div id="root"></div>
+  <script type="text/babel">
+
+  /*
+  To-Do List 웹 애플리케이션을 구현하는 코드
+    할 일 추가 : 사용자가 입력한 내용을 목록에 추가함
+    할 일 삭제 : 특정 할 일을 삭제할 수 있음
+    할 일 완료 체크 : 체크박스를 클릭하면 해당 할 일이 완료되었음을 표시함
+  */
+
+    // React 객체에 들어있는 React.useState() 메소드를 useState()로 호출할 수 있도록 하는 객체 구조 분해 할당
+    const{ useState } = React;
+    
+    // 맨 위에 코드를 작성했지만, 이 내용이 가운데 content의 내용으로 감
+    function TodoList() {
+
+      //  할 일 목록을 저장하는 todos 배열
+      const [todos, setTodos] = useState([]);
+
+      // 할 일의 입력 값을 저장하는 description
+      const [description, setDescription] = useState(''); // 초기값 설정
+
+      // 각 할 일에 고유한 key(id)를 설정한다.
+      // 신규로 생성될 아이디는 1이다. todos 배열의 초기 값이 빈 문자열이기 때문이다.
+      const [id, setId] = useState(todos.length + 1); 
+
+      // Add 버튼 클릭 이벤트 핸들러
+      // Add 버튼 클릭 시 새 할 일을 객체(id, description, isdone)로 생성하고 todos에 추가한다.
+      const onClickHandler = () => {
+
+        // 할 일({})이 추가된 새로운 배열 todos를 setTodos 메소드에 전달한다.
+        // concat() 메소드를 사용하여 Todos 배열에 저장되어 있는 id와 description와 isdone을 가진 객체 기존 배열에 결합한다.
+        // 그 결과를 setTodos()를 통해 상태 업데이트 한다.
+        const changedTodos = todos.concat({
+          id: id,
+          description: description,
+          isdone: false,
+        });
+        setTodos(changedTodos);
+
+        // 다음 할 일을 위해서 id와 description와 isdone의 초기화를 진행
+        setId(id + 1);
+        setDescription('');
+      }
+
+      // 할 일을 입력할 때마다 description이 계속 바뀐다. : setDescription(e.target.value)
+      return (
+        <>
+        <div className="append-todo">
+          <label htmlFor="description">할 일</label>
+          <input type="text" id="description" onChange={(e) => {setDescription(e.target.value)}}/>
+          <button type="button" onClick={onClickHandler}>Add</button>
+         </div>
+        <div className="todo-list">
+          {/* 할 일({}) 목록 todos를 전달해서 TodoListGenerator 컴포넌트가 목록을 화면에 표시한다. */}
+          {/* setTodo를 전달해서 삭제 시 할 일({}) 목록 todos가 변할 수 있도록 한다. */}
+          <TodoListGenerator todos={todos} setTodos={setTodos} />
+        </div>
+        </>
+      )
+    }
+
+    // 할 일 목록을 화면에 렌더링하는 코드
+    function TodoListGenerator(props) { // 객체 구조 분해 할당으로도 가능 : function TodoListGenerator({todos, setTodos}) {}
+    
+      const {todos, setTodos} = props;
+
+      // 삭제 버튼을 클릭하면 동작하는 함수
+      const onTodoDelete = (id) => {
+        // filter() 메소드를 이용해서 id를 가진 todo를 제외한 할 일 목록을 만든다.
+        const changedTodos = todos.filter((todo) => {
+          // 삭제할 id를 제외한 다른 id들을 filter로 거른다.
+          return todo.id !== id;
+        })
+        // 나머지 todos를 setTodos에 적용한다.
+        setTodos(changedTodos);
+      }
+
+      // 체크박스 상태가 변할때마다 동작하는 이벤트 핸들러 (체크박스의 check 여부를 할 일({})의 isdone 속성과 연결)
+      const onChangeHandler = (e) => {
+        
+        // 체크박스 상태가 변하면 화면을 리렌더링하도록(다시 그리도록) 체크박스 상태를 반영한 todos[]을 구해서 setTodos에 전달해야 한다.
+        const changedTodos = todos.map((todo) => {
+ 
+          // map을 이용해 todos 배열의 각 요소(todo)를 순회하면서 체크 상태가 변한 체크박스만 찾아서 체크 여부를 todo의 isdone 속성에 반영한다.
+          if(todo.id == e.target.id) { // if(todo.id === Number(e.target.id)) : = 3개로 비교하고 싶을때 문자열을 정수로 바꿔줘야 ture가 나옴
+            todo.isdone = e.target.checked; //  체크 박스가 체크되었는지(ture), 체크 해제되었는지(false) 확인
+          }
+
+          // isdone 속성이 변경된 todo 객체를 새로운 배열에 담아 반환한다.
+          return todo;
+        })
+        // todos 배열을 변경함으로써 화면을 리렌더링한다. 
+        setTodos(changedTodos);
+      }
+
+      // todo = [{id,description}, {}, {} ...]
+      return (
+        <>
+        {/* JSX 문법에따라 표현식 사용 시 {}로 감싸주어야 함 */}
+          {
+          todos.map((todo) => {
+            return (
+              <div className="todo" key={todo.id}>
+                <input type="checkbox" id={todo.id} onChange={onChangeHandler}/>
+                {/* style은 항상 객체로 지정한다. */}
+                <label htmlFor={todo.id} style={{textDecoration: todo.isdone ? 'line-through' : 'none'}}> {todo.description}</label>
+                {/* onTodoDelete에 따로 이벤트 핸들러를 만들어 처리하지 않는 이유는 삭제하려는 todo.id 값을 주어야 하기 때문임 */}
+                <button type="button" onClick={() => {onTodoDelete(todo.id)}}>X</button>
+              </div>
+             )
+           })
+          }
+        </>
+      )
+    }
+
+    function TodoHeader() {
+      return (
+        <div className="header">
+          <h1>오늘의 TodoList!{new Date().toLocaleDateString()}</h1>
+        </div>
+      )
+    }
+
+    function TodoCotent() {
+
+      // 메인 콘텐츠 부분에서 TodoList 컴포넌트를 렌더링한다.
+      return (
+        <div className="content">
+          <TodoList/>
+        </div>
+      )
+    }
+
+    function TodoFooter() {
+      return (
+        <div className="rooter">
+          <p>Copyright 2025. All rights reserved.</p>
+        </div>
+      )
+    }
+
+    function TodoApp() {
+      // 최상위 컴포넌트, 전체 컴포넌트를 포함하는 컨테이너 역할을 한다.
+      return (
+        <div className="container">
+          <TodoHeader/>
+          <TodoCotent/>
+          <TodoFooter/>
+        </div>
+      )
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<TodoApp/>);
+
+  </script>
+  
+</body>
+</html>
