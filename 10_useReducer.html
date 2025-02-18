@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <!--
+    React.useReducer()
+
+    1. reducer 함수를 이용해서 state를 관리하는 훅(Hooks)이다.
+    2. 형식
+       [ state, dispatch ] = React.useReducer( reducer, initialArg, init?(선택 초기 함수) )
+       1) 반환
+          (1) state    : 현재 state
+          (2) dispatch : state를 처리하는 함수
+                         state 값을 새로운 값으로 업데이트한다.(state 값이 변하면 리 렌더링 발생)
+                         action을 인자로 가지며 반환은 없다.
+       2) 매개변수
+          (1) reducer    : state 업데이트 방식을 지정하는 함수
+                           반드시 순수 함수여야 한다.(함수 내부에서 매개 변수 state와 action의 값이 변하면 안된다.)
+                           state와 action을 인자로 가지며 state를 반환한다.
+          (2) initialArg : 초기 state 값, 3번째 인자 init 함수가 존재하면 해당 함수에 의해서 초기 state 값이 결정된다.
+          (3) init       : 초기 state 값을 반환한 함수, 생략하면 2번째 인자에서 결정한 값을 초기 state 값으로 가진다.
+       3) action 객체
+          (1) 사용자에 의해서 수행되는 활동을 의미하는 객체
+          (2) 모든 타입의 데이터를 가질 수 있다.
+          (3) 일반적으로 type 프로퍼티에 action을 정의하는 값을 할당한다. 추가적인 정보를 저장하려면 기타 프로퍼티를 추가해서 사용한다.
+  -->
+
+  <!--
+    그래서 useReducer()란?
+    리액트는 현재 state와 action을 reducer 함수에 전달한다.
+    reducer 함수는 action에 의해 변경된 state를 반환한다. (action 객체가 가지고 있는 규칙, 즉 type 프로퍼티에 따라 state 값을 결정한다.)
+    변경된 state에 의해서 컴포넌트는 다시 렌더링 된다.
+  -->
+
+  <div id="root1"></div>
+
+  <script type="text/babel">
+
+    function SpinComp() {
+
+      const { useReducer } = React;
+      
+      // 초기 initialArg 객체 (초기 state)
+      const initialArg = {
+        number: 0,
+      }
+
+      // useReducer( '지정하고자 하는 reducer 함수 이름', 'initialArg' ) 호출
+      const [ state, dispatch ] = useReducer(reducer, initialArg);
+
+      return (
+        <>
+          <div>{state.number}</div>
+           {/* dispatch가 전달하는 {type:'PLUS'} 객체는 reducer 함수의 action 에 전달된다. */}
+          <button onClick={() => { dispatch({ type: 'PLUS' }) }}>+</button>
+          <button onClick={() => { dispatch({ type: 'MINUS' }) }}>-</button>
+        </>
+      )
+
+    }
+
+    // useReducer에서 지정한 함수 이름을 사용해서 만든다.
+    function reducer(state, action) { // reducer는 순수 함수로 구성한다.(state, action 값 변경 금지)
+
+      // action에 따라 state 값의 변화를 만든다.
+      // state를 바꿀 수는 없고, 변화된 값을 가진 state를 반환한다.
+      // 일반적으로 switch 문을 사용해서 action에 따른 state 값을 생성한다.
+
+      switch(action.type) {
+
+        // action(type: 'PLUS')에 따른 state 값을 생성
+        case'PLUS':
+          return {number: state.number + 1}
+
+        case'MINUS':
+          return {number: state.number - 1}
+        
+        // action(type)이 없는 경우, stat 값을 그대로 반환
+        default:
+          return state;
+      }
+    }
+
+    ReactDOM.createRoot(document.getElementById('root1')).render(<SpinComp/>);
+  </script>
+
+  <div id="root2"></div>
+  
+  <script type="text/babel">
+
+    function formReducer(contact, action) { // formReducer(state, action)
+      
+      return {
+        ...contact, // 기존 contact(email, tel)이 가진 값을 그대로 사용한다.
+
+        // action.name(input DOM 객체에서 지정한 email 또는 tel) : action.value(입력값)
+        [action.name]: action.value, // 수정한 contact(email 또는 tel)의 내용을 추가해서 기존 값을 덮어쓰기한다.
+      }
+
+
+    }
+
+    function FormComp() {
+
+      const { useReducer } = React;
+
+      const initialContact = {
+        email: '',
+        tel: '',
+      }
+
+      //    [state, dispatch]       = useReducer(reducer, initialArg);
+      const [contact, saveContact ] = useReducer(formReducer, initialContact);
+
+      const onChangeHandler = (e) => {
+        saveContact(e.target); // formReducer 함수의 action 매개변수로 e.target(=DOM 객체, <input> 태그와 같다.)을 보낸다. 
+      }
+
+      return (
+        <>
+          <input type="text" name="email" placeholder="이메일" onChange={onChangeHandler} />
+          <br/>
+          <input type="text" name="tel" palceholder="전화번호" onChange={onChangeHandler} />
+          <br/>
+          <div>Email:{contact.email}</div>
+          <div>Tel:{contact.tel}</div>
+        </>
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root2')).render(<FormComp/>);
+
+  </script>
+</body>
+</html>

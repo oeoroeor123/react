@@ -105,9 +105,202 @@
       )
 
     }
-    ReactDOM.createRoot(document.getElementById('root2')).render(<UseEffectComp2/>);
+    // ReactDOM.createRoot(document.getElementById('root2')).render(<UseEffectComp2/>);
 
-  </script>       
+  </script>
 
+    <div id="root3"></div>
+    <script type="text/babel">
+
+      function UseEffectComp3() {
+
+        const { useState, useEffect } = React;
+
+        const [ person, setPerson ] = useState({
+          name: ' ',
+          age: 0,
+        });
+
+        useEffect(() => {
+          if(person.name === '') {
+            alert('이름은 필수입니다.');
+          }
+        }, [person.name]);  // 초기 렌더링과 person.name이 변할때만 useEffect이 동작합니다.
+
+        useEffect(() => {
+          if(person.age < 0 || person.age > 100) {
+            alert('잘못된 나이입니다.');
+          }
+        }, [person.age]);  // 초기 렌더링과 person.age가 변할때만 useEffect이 동작합니다.
+
+        const onChangeHandler = (e) => {
+          
+          setPerson({
+
+            // 1. person 객체가 가진 값을 그대로 사용합니다.
+            ...person,
+            /* name: person.name,
+            age: person.age, */
+
+            // 2. change 이벤트가 동작하는 입력 내용(내용이 바뀐 것)만 덮어쓰기 합니다.
+            [e.target.id]: e.target.value,  // ['name']: e.target.value 또는 ['age']: e.target.value
+            /* name: e.target.value,
+            age: e.target.value, */
+
+          })
+
+        }
+
+        return (
+          <div>
+            <input type="text" id="name" placeholder="이름" onChange={onChangeHandler} />
+            <br/>
+            <input type="text" id="age" placeholder="나이" onChange={onChangeHandler} />
+            <br/>
+            <div>name: {person.name}</div>
+            <div>age: {person.age}</div>
+          </div>
+        )
+
+      }
+
+      // ReactDOM.createRoot(document.getElementById('root3')).render(<UseEffectComp3/>);
+
+    </script>
+
+    <div id="root4"></div>
+    <script type="text/babel">
+
+      // useEffect()의 setup 함수는 cleanup 함수를 반환할 수 있습니다.
+      // 주로 setup 함수가 사용한 자원의 정리를 하기 때문에 cleanup이라고 부릅니다.
+
+      function UseEffectComp4() {
+
+        const { useEffect } = React;
+
+        useEffect(() => {
+
+          // 수행할 작업
+          console.log('BEGIN!');
+          const watch = setInterval(() => {
+            console.log(new Date().toLocaleTimeString());
+          }, 1000);
+
+          // cleanup 함수 반환 (UseEffectComp4 컴포넌트의 렌더링이 끝나면 cleanup 함수가 동작합니다.)
+          return () => {
+            clearInterval(watch);
+            console.log('END!');
+          }
+
+        }, []);  // 비어 있는 배열 : 초기 렌더링에서만 동작합니다.
+
+        return (
+          <div>console 확인 요망</div>
+        )
+
+      }
+
+      function StopNGo() {
+
+        const { useState } = React;
+
+        const [ isOn, setIsOn ] = useState(false);
+
+        return (
+          <>
+            <button onClick={() => { setIsOn(!isOn); }}>토글스위치</button>
+            { isOn ? <UseEffectComp4/> : null }
+            {/* isOn && <UseEffectComp4/> */}
+          </>
+        )
+
+      }
+
+      // ReactDOM.createRoot(document.getElementById('root4')).render(<StopNGo/>);
+
+    </script>
+
+    <div id="root5"></div>
+    <script type="text/babel">
+
+      const { useEffect, useState } = React;
+
+
+      function Typing({ text, setIsDone }) {
+
+        // 사용자가 입력한 값을 저장하는 state
+        const [ input, setInput ] = useState('');
+
+        // 시간을 재는 useEffect
+        useEffect(() => {
+          // 초기 렌더링할 때 시간을 기록해 둠
+          const begin = new Date().getTime();
+          // Typing 컴포넌트의 렌더링이 끝날 때 시간을 기록해서 얼마나 시간이 지났는지 체크
+          return () => {
+            const end = new Date().getTime();
+            alert((end - begin) + 'ms');
+          }
+        }, []);
+
+        // 사용자가 입력한 값을 input에 저장하는 onChangeHandler
+        const onChangeHandler = (e) => {
+          setInput(e.target.value);
+        }
+
+        // Enter를 누르면 input과 text가 동일한지 비교하는 onKeyPressHandler
+        const onKeyPressHandler = (e) => {
+          if(e.key === 'Enter') {
+            setIsDone(input === text);
+          }
+        }
+
+        return (
+          <>
+            <h1>{text}</h1>
+            <input type="text" size="50" placeholder="Try" 
+                  onChange={onChangeHandler}
+                  onKeyPress={onKeyPressHandler}
+                  value={input} />
+          </>
+        )
+
+      }
+
+      function TypingApp() {
+
+        // 화면에 표시할 랜덤 스트링을 저장하는 state
+        const [ text, setText ] = useState('');
+
+        // 사용자가 랜덤 스트링을 올바르게 모두 입력했는지 여부를 저장하는 state
+        const [ isDone, setIsDone ] = useState(false);
+        
+        // Typing 컴포넌트를 화면에 표시할 것인지 여부를 저장하는 state
+        const [ visible, setVisible ] = useState(false);
+
+        // 초기 렌더링 시 랜덤 스트링을 text에 저장
+        useEffect(() => {
+          // setText(window.crypto.randomUUID());  // 36자로 구성된 Level4 UUID 생성 (Universal Unique IDentifier)
+          setText(window.crypto.randomUUID().split('-')[0]);
+        }, []);
+
+        // 초기 렌더링 시 visible 값을 true로 설정
+        // 이후 isDone 이 변경되면(isDone이 true가 되면) visible 값을 반대로 설정(visible 값을 false로 설정)
+        useEffect(() => {
+          setVisible(!visible);
+        }, [isDone]);
+
+        return (
+          <>
+            { visible ? <Typing text={text} setIsDone={setIsDone}/> : null }
+          </>
+        )
+
+      }
+
+      ReactDOM.createRoot(document.getElementById('root5')).render(<TypingApp/>);
+
+    </script> 
+
+  
 </body>
 </html>
