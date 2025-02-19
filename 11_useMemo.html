@@ -46,36 +46,29 @@
 
       // 첫 번째 state
       // 리 렌더링 시 일반 연산을 수행한다, 성능에 별다른 영향이 없다.
-      const[normalNumber, setNormalNumber] = useState(0);
+      const [normalNumber, setNormalNumber] = useState(0);
       const normalResult = operation1(normalNumber);
-
+    
       // 두 번째 state
       // 리 렌더링 시 오버헤드가 걸리는 연산을 수행한다, 성능에 지대한 영향을 끼친다.
-      const[overheadNumber, setOverheadNumber] = useState(0);
-      const[normalNumber, setNormalNumber] = useState(0);
-
-      // 두 번째 state
-      const[overheadNumber, setOverheadNumber] = useState(0);
-
-      // 각 결과값 operation1,2 번에 전달
-      const normalResult = operation1(normalNumber);
+      const [overheadNumber, setOverheadNumber] = useState(0);
       const overheadResult = operation2(overheadNumber);
 
       // 엘리먼트 생성
       return (
         <>
           <h1>일반 연산</h1>
-          <input type="number" value={normalNumber} onChange={e => setNormalNumber(e.target.value)}/>
+          <input type="number" value={normalNumber} onChange={e => setNormalNumber(Number(e.target.value))}/>
           <div>{normalNumber} + 1 = {normalResult}</div>
-          <h1>오버헤드 계산 활용</h1>
-          <input type="number" value={overheadNumber} onChange={e => setOverheadNumber(e.target.value)}/>
+          <h1>오버헤드 연산</h1>
+          <input type="number" value={overheadNumber} onChange={e => setOverheadNumber(Number(e.target.value))}/>
           <div>{overheadNumber} + 1 = {overheadResult}</div>
         </>
       )
     }
 
     // 렌더링
-    // ReactDOM.createRoot(document.getElementById('root1')).render(<UseMemoComp1/>);
+    ReactDOM.createRoot(document.getElementById('root1')).render(<UseMemoComp1/>);
 
   </script>
 
@@ -197,7 +190,7 @@
     }
   
     // 렌더링
-    ReactDOM.createRoot(document.getElementById('root3')).render(<UseMemoComp3/>);
+    // ReactDOM.createRoot(document.getElementById('root3')).render(<UseMemoComp3/>);
   </script>
   
 </body>

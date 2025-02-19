@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <!--
+  React.useRef()
+
+  1. 렌더링할 때 필요하지 않은 값을 참조할 수 있는 훅(Hooks)입니다.
+  2. useRef()에 의해서 반환된 값은 변경되더라도 리렌더링이 되지 않습니다.
+  3. 형식
+      ref = React.useRef(initialValue)
+    1) 반환
+      (1) 객체를 반환합니다.
+      (2) ref 반환 객체는 단일 프로퍼티 current를 가지고 있고 해당 프로퍼티에 initialValue가 초기값으로 저장됩니다.
+      (3) ref 반환 객체를 JSX 노드의 ref 속성에 전달하면 리액트는 이를 프로퍼티 current에 저장합니다.
+      (4) ref 반환 객체를 변경해도 리렌더링 되지 않습니다.
+    2) 매개변수
+      1) initialValue
+        - ref 반환 객체의 프로퍼티 current에 저장되는 초기값입니다.
+  -->
+
+  <div id="root1"></div>
+
+  <script type="text/babel">
+
+    function UseRefComp1() {
+
+      // 쓰고자 하는 훅들을 React객체에서 빼서 사용한다.
+      const { useState, useRef } = React;
+
+      // useState 초기값 지정
+      const [number, setNumber] = useState(0); 
+
+      // useRef 초기값 지정
+      const refNumber = useRef(0);
+
+      return (
+        <>
+          {/* state number의 변경은 리렌더링을 유발하므로 곧바로 화면에 변경사항이 나타난다. */}
+          <button onClick={() => { setNumber(number + 1) }}>number 증가</button>
+          <div>number: {number}</div>
+
+          {/* refNumber 반환 객체는 값이 증가하지만 리 렌더링되지 않기 때문에, useState값이 리 렌더링 되는 시점에 증가된 값이 보여진다. */}
+          <button onClick={() => { refNumber.current += 1 }}>refNumber 증가</button>
+          <div>refNumber: {refNumber.current}</div>
+        </>
+      )
+    }
+
+    // 렌더링
+    ReactDOM.createRoot(document.getElementById('root1')).render(<UseRefComp1/>);
+  </script>
+
+  <div id="root2"></div>
+  <script type="text/babel">
+
+    function UseRefComp2() {
+      
+      const { useState, useRef, useEffect } = React;
+      
+      // useState 초기값 지정
+      const [ text, setText ] = useState('');
+
+      // useRef 객체 선언, 초기값을 주지 않고 DOM 객체에 따로 선언하여 조작이 용이하도록 한다.
+      const inputRef = useRef();
+
+      // useEffect에 빈 의존성 배열을 넣어 초기 렌더링 시 자동 포커스 효과를 준다.
+      useEffect(() => {
+        // inputRef.current는 input 태그를 의미함
+        inputRef.current.focus();
+      }, [])
+
+      // 버튼 클릭 시 입력된 text를 경고창으로 출력 후 input 태그에 입력된 text를 지운 다음 input 태그에 포커스
+      const onClickHandler = (e) => {
+        alert(`${text}`);
+        setText('');
+        inputRef.current.focus(); // 입력 창 input 객체 DOM 자체에(inputRef.current.) 커서 효과 주기
+      }
+      
+      // DOM 객체 자체가 useRef 객체가 되도록 설정해줌 : ref={inputRef}
+      return (
+        <>
+        {/* JSX 노드 input 태그에 ref 속성에 inputRef를 전달하면 해당 input 태그가 inputRef 객체가 됩니다. */}
+        <input type="text" value={text} ref={inputRef} onChange={(e) => {setText(e.target.value)}} />
+        <button onClick={onClickHandler}>클릭</button>
+        </>
+      )
+    }
+
+    // ReactDOM.createRoot(document.getElementById('root2')).render(<UseRefComp2/>);
+  </script>
+  
+</body>
+</html>

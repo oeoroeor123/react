@@ -19,6 +19,32 @@
 </head>
 <body>
 
+  <!--
+  React.useCallback()
+
+  1. 리렌더링 시 함수 정의는 항상 재할당됩니다.
+  2. 리렌더링 시 함수 정의를 캐싱해 주는 훅(Hooks)입니다.
+  3. 형식
+      cachedFn = React.useCallback(fn, dependencies)
+    1) 반환
+      (1) 최초 렌더링 시 useCallback()에 전달한 fn을 그대로 반환합니다.
+      (2) 리렌더링 시 의존성 배열(dependencies)에 변경이 없으면 캐싱한 함수를 반환하고, 변경이 있으면 fn 함수를 다시 호출해 반환합니다.
+    2) 매개변수
+      (1) fn
+        - 캐싱할 함수입니다. 해당 함수는 어떤 인자나 반환값도 가질 수 있습니다.
+      (2) dependencies
+        - 의존성 배열입니다.
+        - fn 함수에서 사용하는 모든 반응형 값(props, state, 변수, 함수 등)이 포함될 수 있습니다.
+        - dependencies가 비어 있는 경우: 마지막 렌더링에서 캐싱한 함수를 반환합니다.
+        - dependencies가 값을 가진 경우: 해당 값이 변하면 리렌더링 시 fn 함수를 다시 호출하고 반환된 값을 캐싱합니다.
+  -->
+
+  <!--
+  1. 리렌더링 시 불필요하게 함수가 재할당되는 상황
+    리렌더링 시 컴포넌트 내부에서 선언한 함수는 항상 재할당됩니다.
+    따라서 useEffect()의 의존성 배열에 해당 함수를 전달하면 실제 함수 변경 여부와 상관없이 항상 useEffect()가 동작합니다.  
+  -->
+
   <div id="root1"></div>
 
   <script type="text/babel">
@@ -27,20 +53,26 @@
 
       const { useState, useEffect } = React;
 
-      // state 선언
+      // 리 렌더링을 유발할 state number 선언
+      // print 함수와 관련 있음
       const [number, setNumber] = useState(0);
 
+      // number가 변하면 print 함수에 변경 발생
+      // 리 렌더링 시 항상 print 함수가 재할당되므로 이 경우에도 print 함수에 변경 발생
       const print = () => {
         console.log(number);
       }
 
+      // 리 렌더링 시 항상 print 함수는 재할당되므로 리액트는 print 함수가 변했다고 생각함
       useEffect(() => {
         console.log('useEffect');
       }, [print]); // 위에서 생성한 print 함수가 변하면 리 렌더링 시 useEffect()이 동작한다.
 
+      // 리 렌더링을 유발할 state text 선언
       // print 함수 안에 text가 없지만, print 함수의 참조 주소가 리 렌더링하며 변했기 때문에 변한것으로 인지하고 useEffect이 동작한다.
       const [text, setText] = useState('');
       
+      // print 함수 변경과 상관 없는 text 변경 시에도 리 렌더링이 발생하므로 print 함수가 변경된 것으로 인식
       return (
         <>
           <input type="number" value={number} onChange={e => setNumber(e.target.value)}/>
@@ -56,6 +88,7 @@
 
   </script>
   
+    <!-- 2. useCallback()을 이용한 함수 Memoization -->
     <div id="root2"></div>
 
     <script type="text/babel">
@@ -67,6 +100,7 @@
         // state 선언
         const [number, setNumber] = useState(0);
 
+        // useCallback() 사용으로 인해 number의 변경이 없는 리렌더링 상황에서는 print 함수의 재할당 없음
         const print = useCallback(() => {
           console.log(number);
         }, [number]); // 실제로 print 함수가 가지고 있는 state number 값이 변하면 useCallback()이 가지고 있는 함수를 반환한다. 값이 변하지 않으면 캐싱한 값을 그대로 사용한다.
@@ -89,7 +123,76 @@
       }
 
       // 렌더링
-      ReactDOM.createRoot(document.getElementById('root2')).render(<UseCallbackComp2/>);
+      // ReactDOM.createRoot(document.getElementById('root2')).render(<UseCallbackComp2/>);
+
+    </script>
+
+    <div id="root3"></div>
+
+    <script type="text/babel">
+
+      function Parent() {
+
+        const { useState, useCallback } = React;
+
+        const [size, setSize] = useState(100);
+
+        const getStyle = useCallback(() => {
+          return {
+            backgroundColor: 'orange',
+            border: '1px solid gray',
+            // `${변수}단위` 형식
+            width: `${size}px`,
+            height: `${size}px`,
+          }
+        }, [size]); // getStyle 함수에서 직접 사용하는 size 값이 변경될 경우 getStyle 함수가 새롭게 생성된다.
+
+        const [dark, setDark] = useState(false);
+
+        return (
+          // style 지정 시 표현식을 사용했기 때문에 내용을 {}로 한 번 감싸줌
+          <div style={ {backgroundColor: dark ? 'black' : 'white'} }>
+
+            {/* 
+            number 변경 →
+            자식 컴포넌트 Child로 넘기는 getStyle 함수의 변경 →
+            자식 컴포넌트 Child의 useEffect()에 설정된 의존성 배열이 getStyle이므로 useEffect()이 동작함
+            */}
+            <input type="number" value={size} onChange={e => setSize(e.target.value)}/>
+            <Child getStyle={getStyle}/>
+
+            {/*
+              dark 변경 →
+              부모 컴포넌트 Parent의 리렌더링 →
+              부모 컴포넌트 Parent의 리렌더링 시 getStyle 함수가 재할당되므로 자식 컴포넌트 Child로 넘기는 getStyle 함수의 변경 →
+              자식 컴포넌트 Child의 useEffect()에 설정된 의존성 배열이 getStyle이므로 useEffect()이 동작함
+              
+              즉! 자식 컴포넌트 Child로 넘기는 getStyle 함수의 실제 변경은 없으나 자식 컴포넌트는 getStyle 함수의 변경이 있는 것으로 보고 동작하는 문제 발생
+              getStyle 함수를 useCallback()을 이용해 캐싱해 두면 이와 같은 문제를 해결할 수 있음
+            */}
+            <button onClick={() => { setDark(!dark) }}>테마 변경</button>
+
+          </div>
+        )
+      }
+
+      // props 객체로 프로퍼티 이름을 받는다.
+      function Child({ getStyle }) {
+
+        const { useEffect } = React;
+
+        useEffect(() => {
+          console.log('child useEffect');
+        },[getStyle]);
+
+        return (
+          <div style={getStyle()}></div>
+        )
+      }
+
+      // 렌더링
+      // ReactDOM.createRoot(document.getElementById('root3')).render(<Parent/>);
+
 
     </script>
 </body>
