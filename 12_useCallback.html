@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <div id="root1"></div>
+
+  <script type="text/babel">
+
+    function UseCallbackComp1() {
+
+      const { useState, useEffect } = React;
+
+      // state 선언
+      const [number, setNumber] = useState(0);
+
+      const print = () => {
+        console.log(number);
+      }
+
+      useEffect(() => {
+        console.log('useEffect');
+      }, [print]); // 위에서 생성한 print 함수가 변하면 리 렌더링 시 useEffect()이 동작한다.
+
+      // print 함수 안에 text가 없지만, print 함수의 참조 주소가 리 렌더링하며 변했기 때문에 변한것으로 인지하고 useEffect이 동작한다.
+      const [text, setText] = useState('');
+      
+      return (
+        <>
+          <input type="number" value={number} onChange={e => setNumber(e.target.value)}/>
+          <button onClick={print}> print 함수 호출 </button>
+          <br/>
+          <input type="text" value={text} onChange={e => setText(e.target.value)}/>
+        </>
+      )
+    }
+
+    // 렌더링
+    ReactDOM.createRoot(document.getElementById('root1')).render(<UseCallbackComp1/>);
+
+  </script>
+  
+    <div id="root2"></div>
+
+    <script type="text/babel">
+
+      function UseCallbackComp2() {
+
+        const { useState, useEffect, useCallback } = React;
+
+        // state 선언
+        const [number, setNumber] = useState(0);
+
+        const print = useCallback(() => {
+          console.log(number);
+        }, [number]); // 실제로 print 함수가 가지고 있는 state number 값이 변하면 useCallback()이 가지고 있는 함수를 반환한다. 값이 변하지 않으면 캐싱한 값을 그대로 사용한다.
+
+        useEffect(() => {
+          console.log('useEffect');
+        }, [print]); // 위에서 생성한 print 함수가 변하면 리 렌더링 시 useEffect()이 동작한다.
+
+        // print 함수 안에 text가 없지만, print 함수의 참조 주소가 리 렌더링하며 변했기 때문에 변한것으로 인지하고 useEffect이 동작한다.
+        const [text, setText] = useState('');
+        
+        return (
+          <>
+            <input type="number" value={number} onChange={e => setNumber(e.target.value)}/>
+            <button onClick={print}> print 함수 호출 </button>
+            <br/>
+            <input type="text" value={text} onChange={e => setText(e.target.value)}/>
+          </>
+        )
+      }
+
+      // 렌더링
+      ReactDOM.createRoot(document.getElementById('root2')).render(<UseCallbackComp2/>);
+
+    </script>
+</body>
+</html>

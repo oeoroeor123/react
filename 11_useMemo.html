@@ -19,46 +19,21 @@
 </head>
 <body>
 
-  <!--
-  React.useMemo()
-  
-  1. 리렌더링 할 때 계산 결과를 캐싱해 두는 훅(Hooks)입니다.
-  2. 계산이 오래 걸리는 경우 해당 계산 결과를 캐싱해 두면 리렌더링할 때 재계산을 생략할 수 있습니다.
-  3. 반환할 계산 결과를 캐싱해 두는 것을 Memoization(메모이제이션)이라고 합니다.
-  4. 형식
-      cachedValue = React.useMemo(calculateValue, dependencies)
-    1) 반환
-      (1) 초기 렌더링 시 calculateValue 함수를 호출한 결과를 반환합니다.
-      (2) 리렌더링 시 의존성 배열(dependencies)에 변경이 없으면 캐싱한 값을 반환하고, 변경이 있으면 calculateValue 함수를 다시 호출해 반환합니다.
-    2) 매개변수
-      (1) calculateValue
-        - 계산이 오래 걸리는 연산을 수행하는 함수입니다.
-        - 인자는 없고, 연산 결과를 반환합니다. 모든 타입의 값을 반환할 수 있습니다.
-      (2) dependencies
-        - 의존성 배열입니다.
-        - calculateValue 함수에서 사용하는 모든 반응형 값(props, state, 변수, 함수 등)이 포함될 수 있습니다.
-        - dependencies가 비어 있는 배열인 경우: 마지막 렌더링에서 캐싱한 값을 반환합니다.
-        - dependencies가 값을 가진 배열인 경우: calculateValue 함수를 다시 호출하고 반환된 값을 캐싱합니다.
-  -->
-
   <div id="root1"></div>
 
   <script type="text/babel">
 
     /*
-    코드 설명 : 리렌더링 시 불필요하게 오버헤드가 걸리는 상황 (일반 연산이 동작하는데 시간이 걸림)
+    코드 설명
     normalNumber와 overheadNumber가 변경될 때 마다 operation1, operation2가 항상 다시 실행됨
     operation2는 비효율적인 연산을 포함하므로, overheadNumber가 변경되지 않아도 불필요하게 실행될 가능성이 있음
     
     → 이를 최적화하기 위해 useMemo를 활용해야 함.
      */
-    
-    // 일반 연산
     const operation1 = (n) => {
       return n + 1;
     }
 
-    // 오버헤드 연산
     const operation2 = (n) => {
       for(let i = 0; i < 1999999999; i++); // for문 뒤에 ;로 마무리하면 단독으로 실행된다.
       return n + 1;
