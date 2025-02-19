@@ -52,6 +52,13 @@
       // 두 번째 state
       // 리 렌더링 시 오버헤드가 걸리는 연산을 수행한다, 성능에 지대한 영향을 끼친다.
       const[overheadNumber, setOverheadNumber] = useState(0);
+      const[normalNumber, setNormalNumber] = useState(0);
+
+      // 두 번째 state
+      const[overheadNumber, setOverheadNumber] = useState(0);
+
+      // 각 결과값 operation1,2 번에 전달
+      const normalResult = operation1(normalNumber);
       const overheadResult = operation2(overheadNumber);
 
       // 엘리먼트 생성
