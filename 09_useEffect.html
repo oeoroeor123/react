@@ -121,6 +121,7 @@
           age: 0,
         });
 
+        // 특정 state(person.name, person.age)가 변경되는 경우에만 실행된다.
         useEffect(() => {
           if(person.name === '') {
             alert('이름은 필수입니다.');
@@ -185,7 +186,7 @@
           const watch = setInterval(() => {
             console.log(new Date().toLocaleTimeString());
           }, 1000);
-
+      
           // cleanup 함수 반환 (UseEffectComp4 컴포넌트의 렌더링이 끝나면 cleanup 함수가 동작합니다.)
           return () => {
             clearInterval(watch);
@@ -206,6 +207,10 @@
 
         const [ isOn, setIsOn ] = useState(false);
 
+        /*
+        버튼을 클릭할 때마다 setIsOn(!isOn)을 실행하여 isOn 값을 반전(true ↔ false)시킴
+        처음 false → 클릭하면 true, 다시 클릭하면 false ...
+        */
         return (
           <>
             <button onClick={() => { setIsOn(!isOn); }}>토글스위치</button>
@@ -213,7 +218,6 @@
             {/* isOn && <UseEffectComp4/> */}
           </>
         )
-
       }
 
       // ReactDOM.createRoot(document.getElementById('root4')).render(<StopNGo/>);
