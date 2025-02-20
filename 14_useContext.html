@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <!--
+  React.createContext()
+
+  1. 컨텍스트(context)를 생성할 수 있습니다.
+  2. 컴포넌트 트리 전체에서 데이터를 공유할 수 있도록 컨텍스트(context) 객체를 반환합니다.
+  3. 형식
+      context = React.createContext(defaultValue)
+    1) 반환
+      (1) 컨텍스트(context)를 반환합니다.
+      (2) 컨텍스트(context)에 자체적으로 가진 정보는 없으며 다른 컴포넌트가 읽거나 제공할 컨텍스트(context)를 나타냅니다.
+    2) 매개변수
+      (1) defaultValue
+        - 컴포넌트가 컨텍스트(context)를 읽을 때 해당 컴포넌트의 상위에 일치하는 Context.Provider가 없는 경우 컨텍스트(context)가 가져야 하는 값입니다.
+        - 의미 있는 값이 없는 경우 null 값을 지정합니다.
+  -->
+
+  <!--
+  React.useContext()
+
+  1. 컴포넌트에서 컨텍스트(context)를 구독하여 해당 컨텍스트(context)에 저장된 내용을 확인할 수 있는 훅(Hooks)입니다.
+  2. 컨텍스트(context)란 컴포넌트에서 제공하거나 읽을 수 있는 정보를 의미합니다.
+  3. 컨텍스트(context)는 React.createContext()를 이용해서 생성할 수 있습니다.
+  4. 형식
+      value = React.useContext(SomeContext)
+    1) 반환
+      (1) 컨텍스트(context)를 반환합니다.
+      (2) 이 값은 컴포넌트 트리 중 가장 가까운 위쪽 컴포넌트에서 호출한 <SomeContext.Provider>에 전달한 value로 결정합니다.
+      (3) <SomeContext.Provider>는 useContext()를 호출하는 컴포넌트의 부모 컴포넌트에 배치해야 합니다.
+    2) 매개변수
+      (1) SomeContext
+        - React.createContext()를 이용해 생성한 컨텍스트(context)입니다.
+  -->
+
+
+  <!-- 
+     1. props dilling
+     부모 컴포넌트부터 이어진 props 객체가 자식 컴포넌트까지 계속 전달되는 형태
+     아래 예시로는 dark, setDark = 부모 ~ 자식 컴포넌트까지 이어지는 props 객체
+  -->
+  <div id="root1"></div>
+
+  <script type="text/babel">
+
+    function Header1({dark}) {
+      return (
+       <div style={{
+         backgroundColor: dark ? 'black' : 'white',
+         color: dark ? 'white' : 'black',
+       }}>
+          <h1>Welcome</h1>
+       </div>
+      )
+    }
+
+    function Body1({dark, setDark}) {
+      return (
+        <div style={{
+          backgroundColor: dark ? 'darkgray' : 'white',
+          color: dark ? 'white' : 'black',
+        }}>
+          <p>본문</p>
+          <button onClick={() => {setDark(!dark)}}>{dark ? 'Light' : 'Dark'}</button>
+        </div>
+      )
+    }
+
+    function Footer1({dark}) {
+      return (
+        // style 속성 지정 시 ,{{}} 로 중괄호 2번 묶음
+        <div style={{
+          backgroundColor: dark ? 'black' : 'white',
+          color: dark ? 'white' : 'black',
+        }}>
+          <p>Copyright. All rights reserved.</p>
+        </div>
+      )
+    }
+
+    // 하위 컴포넌트(자식)
+    function Layout1({ dark, setDark }) {
+      return (
+        <div className="container">
+          {/* Layout1 컴포넌트 내부에 들어있는 각 영역들에 필요한 값들을 넣어둔다. */}
+          <Header1 dark={dark} />
+          <Body1 dark={dark} setDark={setDark} />
+          <Footer1 dark={dark} />
+        </div>
+      )
+    }
+
+    // 최상위 컴포넌트(부모)
+    function App1() {
+
+      const { useState } = React;
+      const [dark, setDark] = useState(false);
+
+      // 하위 컴포넌트가 props 객체를 전달 받아 사용한다.
+      return (
+        <Layout1 dark={dark} setDark={setDark}/>
+      )
+    }
+
+    // ReactDOM.createRoot(document.getElementById('root1')).render(<App1/>);
+  </script>
+
+  <div id="root2"></div>
+
+  <script type="text/babel">
+
+    // 1. useContext() 사용을 위해 Context 생성하기
+    const DarkThemeContext = React.createContext(null);
+
+    function Header2() {
+
+      // 4. useContext()를 이용하여 DarkThemeContext에서 필요한 값을 확인한다.
+      const { useContext } = React;
+      const darkThemeContext = useContext(DarkThemeContext);
+
+      // 객체 구조 분해 할당으로 darkThemeContext에 저장시켰던 값 중 필요한 값을 꺼내서 사용한다.
+      const {dark} = darkThemeContext;  
+
+      return (
+       <div style={{
+         backgroundColor: dark ? 'black' : 'white',
+         color: dark ? 'white' : 'black',
+       }}>
+          <h1>Welcome</h1>
+       </div>
+      )
+    }
+
+    function Body2() {
+      // 4. useContext()를 이용하여 DarkThemeContext에서 필요한 값을 확인한다.
+      const { useContext } = React;
+      const darkThemeContext = useContext(DarkThemeContext);
+
+      // 객체 구조 분해 할당으로 darkThemeContext에 저장시켰던 값 중 필요한 값을 꺼내서 사용한다.
+      const {dark, setDark} = darkThemeContext;
+      
+      return (
+        <div style={{
+          backgroundColor: dark ? 'darkgray' : 'white',
+          color: dark ? 'white' : 'black',
+        }}>
+          <p>본문</p>
+          <button onClick={() => {setDark(!dark)}}>{dark ? 'Light' : 'Dark'}</button>
+        </div>
+      )
+    }
+
+    function Footer2() {
+      // 4. useContext()를 이용하여 DarkThemeContext에서 필요한 값을 확인한다.
+      const { useContext } = React;
+      const darkThemeContext = useContext(DarkThemeContext);
+
+      // 객체 구조 분해 할당으로 darkThemeContext에 저장시켰던 값 중 필요한 값을 꺼내서 사용한다.
+      const {dark} = darkThemeContext;
+      
+      return (
+        <div style={{
+          backgroundColor: dark ? 'black' : 'white',
+          color: dark ? 'white' : 'black',
+        }}>
+          <p>Copyright. All rights reserved.</p>
+        </div>
+      )
+    }
+
+    // 하위 컴포넌트(자식)
+    function Layout2() {
+      // 3. Layout2 컴포넌트가 포함하고 있는 Header2, Body2, Footer2 컴포넌트는 모두 DarkThemeContext를 구독하고 있다. (값은 dark, setDark로 2가지이다.)
+      return (
+        <div className="container">
+          <Header2 />
+          <Body2 />
+          <Footer2 />
+        </div>
+      )
+    }
+
+    // 최상위 컴포넌트(부모)
+    function App2() {
+
+      const { useState } = React;
+      const [dark, setDark] = useState(false);
+
+      // 하위 컴포넌트가 props 객체를 전달 받아 사용한다.
+      // useContext()를 호출할 컴포넌트의 부모 컴포넌트가 Provider를 호출하고 value를 전달한다.
+      // 2. DarkThemeContext 제공자(Provider)에게 dark, setDark를 전달하고 Layout2 컴포넌트가 이를 구독할 수 있도록 처리한다.
+      return (
+        <DarkThemeContext.Provider value={{dark, setDark}}>
+          {/* App2 컴포넌트 구독하기 */}
+          <Layout2/>
+        </DarkThemeContext.Provider>
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root2')).render(<App2/>);
+  </script>
+  
+</body>
+</html>

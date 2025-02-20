@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!--
+  axios 사용을 위한 cdn 링크 추가
+  https://axios-http.com/kr/docs/intro
+  -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+   <div id="root"></div>
+
+   <script type="text/babel">
+
+    function SearchForm({setUrl}) {
+
+      const {useState} = React;
+      const [name, setName] = useState('');
+
+       const onClickHandler = async () => {
+        const response = await axios.get('https://api.github.com/emojis');
+
+        // 받아 온 결과 = response.data[프로퍼티가 문자열로 전달될 때 대괄호 표기법으로 전달한다.]
+       setUrl(response.data[name]);
+      }
+
+      return (
+        <>
+          <input type="text" onChange={e => setName(e.target.value)}/>
+          <button onClick={onClickHandler}>검색</button>
+        </>
+      )
+    }
+
+    function Image({url}) {
+      // 검색이 실패하면 url은 undefined 상태이다.
+      return url ? <img src={url}/> : <div>해당 이미지 없음</div>;
+    }
+
+    function App() {
+      const {useState} = React;
+      const [url, setUrl] = useState('');
+
+      return (
+        <>
+          <SearchForm setUrl={setUrl} />
+          <br/>
+          <Image url={url} />
+        </>
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+   </script>
+</body>
+</html>

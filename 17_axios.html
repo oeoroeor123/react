@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!--
+  axios 사용을 위한 cdn 링크 추가
+  https://axios-http.com/kr/docs/intro
+  -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <div id="root1"></div>
+  
+  <script type="text/babel">
+
+    async function callAPI1() {
+      
+      /*
+      axios({
+        url:'https://jsonplaceholder.typicode.com/users',
+        method: 'GET',
+      })
+      */
+
+      // 위와 같은 코드, 메소드를 .get으로 붙이고 url만 전달함
+      // 응답 객체 response(https://axios-http.com/kr/docs/res_schema) 참조
+      const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+
+      // 응답 객체 response에서 서버 응답 결과를 추출한다.
+      const jsonData = response.data;
+
+      // 확인
+      jsonData.forEach((user, index) => {
+        console.log(index, user);
+      })
+    }
+
+    function App1() {
+      return (
+        <button onClick={callAPI1}>API 호출</button>
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root1')).render(<App1/>);
+  </script>
+
+  <div id="root2"></div>
+  <script type="text/babel">
+
+    function callAPI2() {
+      
+      axios.get('https://jsonplaceholder.typicode.com/users')
+         .then(response => {
+           const jsonData = response.data;
+
+           // 확인
+           jsonData.forEach((user, index) => {
+              console.log(index, user);
+           })
+        })
+    }
+
+    function App2() {
+      return (
+        <button onClick={callAPI2}>API 호출</button>
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root2')).render(<App2/>);
+  </script>
+</body>
+</html>

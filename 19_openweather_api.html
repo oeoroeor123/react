@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    react 사용을 위한 cdn 링크 추가
+    https://ko.legacy.reactjs.org/docs/cdn-links.html
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!--
+  babel 사용을 위한 cdn 링크 추가
+  https://babeljs.io/setup#installation 
+  -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!--
+  axios 사용을 위한 cdn 링크 추가
+  https://axios-http.com/kr/docs/intro
+  -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Document</title>
+</head>
+<body>
+
+  <!--
+  OpenWeather 활용하기
+  1. 회원가입 : https://openweathermap.org/
+  2. 사용할 API (One Call API 3.0) - 구독(Subcribe)해야 합니다. 구독 시 개인 신용카드 정보가 필요합니다.
+    1) Name        : Weather
+    2) Description : Current weather and forecasts
+    3) Price Plan  : Free plan (구독하면 하루 1000번 호출까지 무료. 이후로는 과금되므로 주의 요망합니다.)
+  3. OpenWeather API key를 발급 받아야 합니다. (약 1시간 정도 후 활성화 되어 사용 가능합니다.)
+  -->
+
+  <div id="root1"></div>
+
+  <script type="text/babel">
+
+    function Image({url}) {
+      // 검색이 실패하면 url은 undefined 상태이다.
+      return url ? <img src={url}/> : <div>해당 이미지 없음</div>;
+    }
+
+    function Weather() {
+
+      const { useState, useEffect } = React;
+
+      // github imoji URL
+      const [url, setUrl] = useState('');
+
+      // 현재 위치
+      const [position, setPosition] =  useState({
+        longitude: 0, // 경도
+        latitude: 0,  // 위도
+      });
+
+      // 현재 위치의 각종 정보
+      const [current, setCurrent] = useState({});
+
+      // 현재 날씨 정보
+      const [weather, setWeather] = useState({});
+
+      // 현재 위치의 경도/위도를 가져오는 함수
+      const getPosition = () => {
+        // 현재 위치를 가져오는 작업은 비동기로 처리되므로 Promise를 이용해서 처리합니다.
+        return new Promise((resolve, reject) => {
+          // JavaScript의 Geolocation 인터페이스(window.navigator.geolocation)는 장치의 현재 위치를 제공하는 getCurrentPosition() 메소드를 제공합니다.
+          window.navigator.geolocation.getCurrentPosition(currentPosition => {
+            setPosition({
+              longitude: currentPosition.coords.longitude,
+              latitude: currentPosition.coords.latitude,
+            })
+            // 반환 객체 Promise가 저장한 데이터는 현재 위치(currentPosition)입니다.
+            resolve(currentPosition);
+        })
+      })
+    }
+
+
+      // 전달 받은 위치(경도/위도)의 날씨를 반환하는 함수
+      const getWeather = async (currentPosition) => {
+        const lat = currentPosition.coords.latitude;
+        const lon = currentPosition.coords.longitude;
+        // ttps://openweathermap.org/ 에서 구독 후 발급받은 KEY 값
+        const APIKEY = '6d013ca19bf12f9970b864f386fcba12';
+        const response = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${APIKEY}`);
+        return response.data;
+      }
+
+      // OpenWeather API가 제공하는 날씨 키워드를 github imoji 정보를 바꾸고 해당 imoji의 url을 가져와 저장하는 함수
+      const transferToImoji = async (main) => {
+        let name = '';
+        switch(main) {
+          case 'Clear': name = 'sunny'; break; 
+          case 'Rain': name = 'umbrella'; break; 
+          case 'Thunderstorm': name = 'cloud_with_lightning_and_rain'; break; 
+          case 'Snow': name = 'snowman_with_snow'; break; 
+          case 'Clouds': name = 'cloud'; break; 
+          case 'Drizzle': name = 'cloud_with_rain'; break; 
+        }
+        const response = await axios.get('https://api.github.com/emojis');
+        setUrl(response.data[name]);
+      }
+
+      // 초기 렌더링 후 한 번만 동작하는 useEffect()
+      useEffect(() => {
+        async function callAPI() {
+          const currentPosition = await getPosition();         // 현재 위치를 받아옵니다.
+          const jsonData = await getWeather(currentPosition);  // 현재 위치를 전달하고 날씨 정보를 받아옵니다.
+                                                               // jsonData.current.weather[0].main : Clear, Rain, Thunderstorm, Snow, Clouds, Drizzle 등 날씨 관련 정보가 있습니다.
+          transferToImoji(jsonData.current.weather[0].main);   // OpenWeather API가 제공하는 날씨 키워드를 github imoji 이름으로 바꿉니다.
+          setCurrent(jsonData.current);                        // 현재 위치의 각종 정보를 current에 저장합니다.
+          setWeather(jsonData.current.weather[0]);
+        }
+        callAPI();
+      }, []);
+
+      return (
+        <>
+          <div>{`현재 일시 ${new Date(current.dt * 1000).toLocaleString()}`}</div>
+          <div>{`일출 시간 ${new Date(current.sunrise * 1000).toLocaleString()}`}</div>
+          <div>{`일몰 시간 ${new Date(current.sunset * 1000).toLocaleString()}`}</div>
+          <div>UV 지수 {current.uvi}</div>
+          <div>섭씨 {Math.round(current.temp - 273.15, 2)}℃</div>
+          <div>체감 {Math.round(current.feels_like - 273.15, 2)}℃</div>
+          <div>습도 {current.humidity}</div>
+          <div>풍속 {current.wind_speed}</div>
+          <div>날씨 {weather.description}</div>
+          <Image url={url}/>
+          <div>경도 : {position.longitude}</div>
+          <div>위도 : {position.latitude}</div>
+        </>
+      )
+
+    }
+
+    function App() {
+      return (
+        <>
+          <h1>현재 날씨</h1>
+          <Weather/>
+        </>
+      )
+    }
+    
+    const root = ReactDOM.createRoot(document.getElementById('root1'));
+    root.render(<App/>);
+  </script>
+
+  
+</body>
+</html>
