@@ -1,0 +1,88 @@
+1. Node.js
+  1) 자바스크립트로 네트워크 애플리케이션을 개발할 수 있게 해 주는 환경을 의미합니다.
+  2) 웹 브라우저 없이 자바스크립트 코드를 실행할 수 있게 해 주는 Runtime 환경입니다.
+  3) https://nodejs.org/ko 사이트에서 최신 LTS 버전을 다운로드 한 뒤 설치합니다.
+  
+2. npm (node package manager)
+  1) Node.js를 위한 패키지 매니저를 의미합니다.
+  2) Node.js 설치 시 함께 설치됩니다.
+  3) 주요 npm 명령어
+    (1) npm <command> help
+      ① command에 대해서 확인하는 명령입니다.
+      ② npm install help, npm init help 등과 같이 확인하려는 command를 npm help 사이에 작성합니다.
+    (2) npm install <package>
+      ① package를 설치하는 명령입니다.
+      ② 옵션 -g : 글로벌 패키지에 package 추가합니다. (모든 리액트 프로젝트에서 설치한 package 사용 가능)
+      ③ 글로벌 패키지는 "C:\Users\<계정>\AppData\Roaming\npm"에서 확인 가능합니다.
+      ④ 축약 명령 : npm i <package>
+    (3) npm install <url>
+      ① 지정한 저장소(url)에 있는 package를 설치하는 명령입니다.
+      ② 주소 github에 저장된 패키지를 설치할 때 사용합니다.
+    (4) npm ci
+      ① package-lock.json 파일을 기반으로 패키지를 설치하는 명령입니다.
+      ② npm install 명령도 가능하나 npm install 명령은 설치 시 세부 버전이 달라질 수도 있어 npm ci 명령 권장합니다.
+    (5) npm update <package>
+      ① 설치한 package를 업데이트 하는 명령입니다.
+      ② 옵션 --save 사용으로 package.json 파일의 버전도 함께 수정 가능합니다. (패키지 버전은 package-lock.json 파일에서 관리하므로 옵션 --save는 필수가 아닙니다.)
+    (6) npm uninstall <package>
+      ① 설치된 package를 제거하는 명령입니다.
+      ② 글로벌 패키지에 설치한 pagkage는 옵션 -g를 추가해서 제거해야 합니다.
+      ③ 축약 명령 : npm un <package>, npm r <package>
+
+3. npx (node package execute)
+  1) npm 5.2.0 버전 이후 npm 설치 시 함께 설치됩니다.
+  2) 패키지 설치 없이 npm 레지스트리에서 원하는 패키지를 실행할 수 있는 도구입니다.
+  3) npm package runner이므로 아직 설치되지 않은 패키지를 자동으로 설치합니다.
+
+4. 리액트 프로젝트 생성
+  1) npm 이용
+    (1) npm install create-react-app
+    (2) create-react-app myReactApp
+  2) npx 이용
+    (1) npx create-react-app myReactApp
+
+5. 수업을 위한 패키지 설치
+  1) npm install -g npx            : 글로벌 패키지에 npx 설치 (생략 가능)
+  2) npm install -g rimraf         : 빠른 삭제를 지원하는 패키지 (npx 이용해 삭제 시 생략 가능)
+  3) npm install react-route-dom@6 : 리액트 라우터 기능 (필수)
+  4) npm install axios             : axios (Fetch API 사용 시 생략 가능)
+
+6. 리액트 프로젝트 생성 및 실행
+  1) npx create-react-app myReactApp
+  2) cd myReactApp
+  3) npm start
+
+7. 리액트 프로젝트 초기 세팅
+  1) 사용
+    (1) public 디렉터리
+    (2) src/index.js
+    (3) src/App.js
+  2) 삭제
+    (1) src/App.css
+    (2) src/App.test.js
+    (3) src/index.css
+    (4) src/logo.svg
+    (5) src/reportWebVitals.js
+    (6) src/setupTests.js
+
+8. node_modules 디렉터리
+  1) package-lock.json을 참고해서 가져온 패키지들이 저장되는 디렉터리입니다.
+  2) 파일이 매우 많이 포함되어 있고, 크기도 큽니다.
+  3) 리액트 프로젝트를 외부로 옮길 때는 node_modules 디렉터리를 제거하고 옮기는 것이 좋습니다.
+    (리액트 프로젝트 내부의 .gitignore 파일에는 node_modules 디렉터리가 포함되어 있습니다.)
+  4) github에 올릴 때에도 node_modules 디렉터리를 제외해야 합니다.
+  5) 삭제 방법
+    (1) rimraf 설치 후 삭제
+      > npm install -g rimraf
+      > rimraf node_modules
+      > npm cache clean --force
+    (2) rimraf 설치 없이 삭제
+      > npx rimraf node_modules
+      > npm cache clean --force
+
+9. Reactjs Code Snippets
+  1) 리액트 코드의 빠른 완성을 지원하는 VSCode 확장팩이다.
+  2) [확장] 메뉴에서 "Reactjs Code Snippets" 조회 후 설치한다.
+  3) 주요 Snippets
+    (1) rsc : 함수형 컴포넌트 생성
+    (2) rcc : 클래스형 컴포넌트 생성
