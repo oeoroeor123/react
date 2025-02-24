@@ -15,8 +15,10 @@ function App() {
         <Routes>
           {/* 각 컴포넌트로 연결할 내용을 적는다. */}
           {/* SPA(Single Page Application) 방식으로, 상단과 하단은 동일하고 중간은 각 링크에 따라 그 내용이 달라지도록 처리한다. */}
-          {/* path="링크" element="{<컴포넌트/>}" */}
+          {/* 화면에 렌더링할 컴포넌트는 <BasicLayout/>이고, 이 <Route>의 자식(child)이 <BasicLayout/> 컴포넌트의 <Outlet/>에 나타납니다. */}
           <Route element={<BasicLayout/>}>
+            {/* path="링크" element="{<컴포넌트/>}" */}
+            {/* 요청 주소에 따라 화면에 렌더링할 컴포넌트를 선택합니다. */}
             <Route path="/" element={<Main/>}/>
             <Route path="/main" element={<Main/>}/>
             <Route path="/blogs" element={<Blog/>}/>
