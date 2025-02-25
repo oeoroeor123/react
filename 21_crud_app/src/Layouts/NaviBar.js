@@ -5,9 +5,9 @@ const NaviBar = () => {
   return (
     <nav>
       <ul>
-        <li><NavLink to="/blog">블로그</NavLink></li>
-        <li><NavLink to="/blog">블로그</NavLink></li>
-        <li><NavLink to="/blog">블로그</NavLink></li>
+        <li><NavLink to="/blog/list">블로그</NavLink></li>
+        <li><NavLink to="/blog/list">블로그</NavLink></li>
+        <li><NavLink to="/blog/list">블로그</NavLink></li>
       </ul>
     </nav>
   );

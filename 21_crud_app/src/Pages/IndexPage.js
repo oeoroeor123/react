@@ -3,7 +3,7 @@ import React from 'react';
 const IndexPage = () => {
   return (
     <div>
-      <h1>IndexPage입니다.</h1>
+      <h1>인덱스 페이지</h1>
     </div>
   );
 };

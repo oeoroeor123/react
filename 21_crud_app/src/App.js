@@ -1,6 +1,8 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom'; 
 import BasicLayout from './Layouts/BasicLayout';
 import IndexPage from './Pages/IndexPage';
+import ListPage from './Pages/Blog/ListPage';
+import RegistPage from './Pages/Blog/RegistPage';
 
 function App() {
   return (
@@ -9,8 +11,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<BasicLayout/>}>
-          {/* BasicLayout의 Outlet자리에 IndexPage가 보여진다. */}
-          <Route path="/" element={<IndexPage/>}></Route> 
+          {/* BasicLayout의 Outlet자리에 보여지고자 하는 모든 페이지들을 여기에 넣는다. */}
+          <Route path="/"            element={<IndexPage/>}></Route> 
+          <Route path="/blog/list"   element={<ListPage/>}></Route>
+          <Route path="/blog/regist" element={<RegistPage/>}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

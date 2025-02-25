@@ -1,0 +1,9 @@
+1. mysql 스키마(db) 생성
+DROP DATABASE IF EXISTS db_blog;
+CREATE DATABASE IF NOT EXISTS db_blog;
+USE db_blog;
+
+2. sts crud 코드 짜기
+
+3. vs코드 react-app 생성
+* 터미널에 코드 짜기
