@@ -1,0 +1,78 @@
+1. 노드 설치 (ver.22.14.0)
+https://nodejs.org/ko
+
+설치 시, 계속 다음 눌러서 설치 완료함
+
+
+2.  vs 코드 > 터미널 > 새 터미널 > cmd prompt 추가
+
+npm install npx -g
+: 설치
+
+cd '폴더 이름'
+: vs 코드에서 폴더 만들고 해당 폴더로 이동
+
+npx create-react-app .
+: 현재 폴더에 리액트app 만들기
+또는 
+npx create-react-app '폴더 이름'
+: 폴더 이름을 지정하고 바로 리액트 app 만들기
+
+npm start
+: 리액트app 폴더 내부에 들어가서 실행 (따로 버튼을 누르는 것이 아닌 명령어로 시작한다.)
+
+컨트롤 + c
+: 리액트app 종료
+
+** node_modules 파일 삭제 필요 시
+npm install -g rimraf (rimraf 패키지 설치)
+npx rimraf node_modules (node_modules 삭제)
+npm cache clean --force (캐시 클린) 
+: node_modules 관련 내용은 크기가 너무 커서 제외하고 올린다.
+
+npm install
+: node_modules 재설치( 해당 파일은 package-lock.json 내용의 영향을 받아 생성된다.)
+
+npm install react-router-dom@6
+npm install axios
+: 필요한 프로그램 설치
+
+-------------------------------------------------------------
+[ 이론 ]
+
+** node_modules 파일
+react app 프로젝트는 node_modules 파일은 크기가 커서 제외하고 올려야 한다. (제외하고 올리지 않으면 오류 발생!)
+node_modules 파일이 없으면 리액트 app이 실행되지 않는다, 꼭 파일 유무 체크 후 실행해야 한다.
+
+방법 1) 
+.gitignore 파일에 node_modules 은 제외하고 올리라는 코드가 있으니 .gitignore 파일만 먼저 올리고 나머지를 커밋앤 푸쉬한다.
+
+방법 2) 명령어 자체에서 node_modules 파일을 먼저 지우고 올린다.
+* 주의: 리액트app이 실행된 상태여야 다음 작업을 할 수 있기때문에, 꼭 지우기 전에 실행 여부를 체크한다.
+npx rimraf node_modules (node_modules 삭제)
+npm cache clean --force (캐시 클린)
+vs코드 커밋앤푸쉬
+
+
+** 리액트app을 만들기 위해 아래 3가지 파일은 필수로 필요하다.
+
+1. public > index.html : <div id="root"> 생성
+
+2. src > App.js : app 컴포넌트 생성
+파일명과 컴포넌트 이름은 통일 / export default 코드 필수(index.js에서 import 하기 위함)
+
+3. src > index.js : 위 2개 파일에 생성한 root와 컴포넌트를 이용해 렌더링하기
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+    <App />
+);
+
+
+** vs 코드 확장팩 설치
+Reactjs code snippets : reactjs 컴포넌트 기본 코드를 자동으로 생성해준다.
+
+컴포넌트 생성 시, 
+rcc(클래스형 컴포넌트) 
+rsc(함수형 컴포넌트)  - 권장
+각 코드를 입력하면 자동으로 컴포넌트가 생성된다.
+
