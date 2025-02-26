@@ -1,11 +1,11 @@
 import React from 'react';
-import EditComp from '../../components/blog/EditComp';
 import { useParams } from 'react-router-dom';
+import EditComp from '../../Components/Blog/EditComp';
 
 const EditPage = () => {
-
-  // 경로 변수(Path Variable)를 처리하는 useParams()
-  const { id } = useParams();
+  
+  // 경로 변수를 처리하는 useParams()
+  const {id} = useParams();
 
   return (
     <div>
@@ -13,7 +13,7 @@ const EditPage = () => {
       <EditComp id={id} />
     </div>
   );
-
+  
 };
 
 export default EditPage;

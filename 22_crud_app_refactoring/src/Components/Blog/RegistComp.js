@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { registBlog } from '../../api/blogAPI';
+import CustomNavigate from '../../hooks/CustomNavigate';
 
 const RegistComp = () => {
+
+  // 페이지 이동 함수
+  const { goToListPage } = CustomNavigate();
 
   // blog 객체 선언 (등록 시 title, content만 전달)
   const [ blog, setBlog ] = useState({
@@ -13,22 +16,18 @@ const RegistComp = () => {
   // onChangeHandler() : 사용자가 title, content에 입력한 내용을 blog 객체에 저장
   const onChangeHandler = e => {
     setBlog({
-      ...blog,
-      [e.target.name]: e.target.value,
+      ...blog,                           // 기존의 blog 내용은 그대로 사용한다. 
+      [e.target.name]: e.target.value,   // title, content가 새롭게 들어온다면 현재 작성한 내용으로 덮어쓰기한다.
     })
   }
 
-  // useNavigate() : 페이지 이동 Hooks
-  const navigate = useNavigate();
-
   // onClickHandler() : 블로그 저장
   const onClickHandler = async () => {
-    const response = await axios.post(`http://localhost:8080/blogs`, blog);
-    const jsonData = await response.data;
-    alert(jsonData.message);
-    navigate({
-      pathname: `/blog/list`,
-    })
+    registBlog(blog)
+      .then(jsonData => {
+        alert(jsonData.message);
+        goToListPage();
+      })
   }
 
   return (

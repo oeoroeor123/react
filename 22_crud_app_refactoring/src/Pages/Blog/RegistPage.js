@@ -1,5 +1,5 @@
 import React from 'react';
-import RegistComp from '../../components/blog/RegistComp';
+import RegistComp from '../../Components/Blog/RegistComp';
 
 const RegistPage = () => {
   return (

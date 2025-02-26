@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { getBlog, modifyBlog, deleteBlog } from '../../api/blogAPI';
+import CustomNavigate from '../../hooks/CustomNavigate';
 
 const EditComp = ({ id }) => {
   
+  // 페이지 이동 함수
+  const { goToDetailPage, goToListPage } = CustomNavigate();
+
   // blog 객체 선언
   const [blog, setBlog] = useState({
     id: 0,
@@ -14,12 +17,10 @@ const EditComp = ({ id }) => {
 
   // useEffect() : 최초 렌더링 시 또는 id가 변하면 블로그 상세 조회
   useEffect(() => {
-    const getBlog = async () => {
-      const response = await axios.get(`http://localhost:8080/blogs/${id}`);
-      const jsonData = await response.data;
-      setBlog(jsonData.results.blog);
-    }
-    getBlog();
+    getBlog(id)
+      .then(jsonData => {
+        setBlog(jsonData.results.blog);
+      })
   }, [id]);
 
   // onChangeHandler() : 입력한 title, content 내용을 blog에 저장
@@ -30,30 +31,26 @@ const EditComp = ({ id }) => {
     })
   }
 
-  // useNavigate() : 페이지 이동 Hooks
-  const navigate = useNavigate();
-
   // onClickModifyHandler() : 블로그 수정
   const onClickModifyHandler = async () => {
-    const response = await axios.put(`http://localhost:8080/blogs/${id}`, blog);
-    const jsonData = await response.data;
-    window.alert(jsonData.message);
-    navigate({
-      pathname: `/blog/detail/${id}`,
-    })
+    modifyBlog(blog)
+      .then(jsonData => {
+        window.alert(jsonData.message);
+        goToDetailPage(blog.id);
+      })
   }
 
   // onClickDeleteHandler() : 블로그 삭제
   const onClickDeleteHandler = async () => {
     if(!window.confirm('블로그를 삭제할까요?'))
       return;
-    const response = await axios.delete(`http://localhost:8080/blogs/${id}`);
-    const jsonData = await response.data;
-    window.alert(jsonData.message);
-    navigate({
-      pathname: `/blog/list`,
-    })
+    deleteBlog(id)
+      .then(jsonData => {
+        window.alert(jsonData.message);
+        goToListPage();
+      })
   }
+
 
   // div() : <div> 태그 반환 함수
   const div = (label, value) => {

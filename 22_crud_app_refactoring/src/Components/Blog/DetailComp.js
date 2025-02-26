@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { getBlog } from '../../api/blogAPI';
+import CustomNavigate from '../../hooks/CustomNavigate';
 
+// props(id) 값 받기
 const DetailComp = ({ id }) => {
+
+  // 페이지 이동 함수
+  const { goToEditPage, goToListPage } = CustomNavigate();
 
   // blog 객체 선언
   const [blog, setBlog] = useState({
@@ -14,23 +18,11 @@ const DetailComp = ({ id }) => {
 
   // useEffect() : 최초 렌더링 시 또는 id가 변하면 블로그 상세 조회
   useEffect(() => {
-    const getBlog = async () => {
-      const response = await axios.get(`http://localhost:8080/blogs/${id}`);
-      const jsonData = await response.data;
-      setBlog(jsonData.results.blog);
-    }
-    getBlog();
+    getBlog(id)
+      .then(jsonData => {
+        setBlog(jsonData.results.blog);
+      })
   }, [id]);
-
-  // useNavigate() : 페이지 이동 Hooks
-  const navigate = useNavigate();
-
-  // goToEditPage() : 편집 페이지로 이동
-  const goToEditPage = (id) => {
-    navigate({
-      pathname: `/blog/edit/${id}`,
-    })
-  }
 
   // div() : <div> 태그 반환 함수
   const div = (label, value) => {
@@ -50,11 +42,10 @@ const DetailComp = ({ id }) => {
       { div('CREATE_DT', blog.createDt.replace('T', ' ')) }
       <div>
         <button onClick={() => { goToEditPage(blog.id) }}>편집하기</button>
-        <button onClick={() => {}}>목록보기</button>
+        <button onClick={() => { goToListPage() }}>목록보기</button>
       </div>
     </div>
   );
-
 };
 
 export default DetailComp;

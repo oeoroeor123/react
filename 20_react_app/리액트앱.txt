@@ -12,7 +12,7 @@
       ② npm install help, npm init help 등과 같이 확인하려는 command를 npm help 사이에 작성합니다.
     (2) npm install <package>
       ① package를 설치하는 명령입니다.
-      ② 옵션 -g : 글로벌 패키지에 package 추가합니다. (모든 리액트 프로젝트에서 설치한 package 사용 가능)
+      ② 옵션 -g : 글로벌 패키지에 package 추가합니다. (모든 리액트 프로젝트에서 설치한 package 사용 가능), 한번 -g로 설치하면 이후부터는 자동 설치 상태이다.
       ③ 글로벌 패키지는 "C:\Users\<계정>\AppData\Roaming\npm"에서 확인 가능합니다.
       ④ 축약 명령 : npm i <package>
     (3) npm install <url>
