@@ -3,6 +3,8 @@ import BasicLayout from './Layouts/BasicLayout';
 import IndexPage from './Pages/IndexPage';
 import ListPage from './Pages/Blog/ListPage';
 import RegistPage from './Pages/Blog/RegistPage';
+import DetailPage from './Pages/Blog/DetailPage';
+import EditPage from './Pages/Blog/EditPage';
 
 function App() {
   return (
@@ -12,9 +14,12 @@ function App() {
       <Routes>
         <Route element={<BasicLayout/>}>
           {/* BasicLayout의 Outlet자리에 보여지고자 하는 모든 페이지들을 여기에 넣는다. */}
-          <Route path="/"            element={<IndexPage/>}></Route> 
-          <Route path="/blog/list"   element={<ListPage/>}></Route>
-          <Route path="/blog/regist" element={<RegistPage/>}></Route>
+          <Route path="/"                element={<IndexPage/>}></Route> 
+          <Route path="/blog/list"       element={<ListPage/>}></Route>
+          <Route path="/blog/regist"     element={<RegistPage/>}></Route>
+          {/* Route에서 경로 변수 작성하는 법 ':경로변수명' */}
+          <Route path="/blog/detail/:id" element={<DetailPage/>}></Route>
+          <Route path="/blog/edit/:id"   element={<EditPage/>}></Route>
         </Route>
       </Routes>
     </BrowserRouter>
